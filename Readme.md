@@ -25,3 +25,7 @@ repositories {
 
 Support for request tracing with Correlation IDs for [Jersey](https://jersey.java.net/) (the RESTful Web Services
 framework that [Dropwizard](http://www.dropwizard.io/) runs on) via a pair of filters.
+
+### [Spire Client](spire-client)
+
+Support for accessing data from Spire.
