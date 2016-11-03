@@ -1,5 +1,5 @@
 group 'uk.gov.bis.lite'
-version '0.9'
+version '1.0'
 
 apply plugin: 'java'
 apply plugin: 'maven-publish'
@@ -19,9 +19,24 @@ publishing {
   publications {
     mavenJava(MavenPublication) {
       from components.java
+      artifacts {
+        archives packageJavadoc
+        archives packageSources
+      }
     }
   }
 }
+
+task packageJavadoc(type: Jar) {
+  from javadoc
+  classifier = 'javadoc'
+}
+
+task packageSources(type: Jar, dependsOn: 'classes') {
+  from sourceSets.main.allSource
+  classifier = 'sources'
+}
+
 publishing {
   repositories {
     maven {

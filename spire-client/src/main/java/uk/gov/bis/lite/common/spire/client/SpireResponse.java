@@ -17,7 +17,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import javax.xml.soap.SOAPBody;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPFault;
 import javax.xml.soap.SOAPMessage;
@@ -27,8 +26,7 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 /**
- * Wraps SOAPMessage response message
- * Provides convenience methods for accessing and manipulating SOAPMessage content
+ * SpireClient response
  */
 public class SpireResponse {
 
@@ -45,16 +43,33 @@ public class SpireResponse {
     this.message = message;
   }
 
+  /**
+   * Checks SpireResponse for recognised error conditions
+   *
+   * @throws SpireClientException thrown when error or fault detected
+   */
   void checkForErrors() {
-    throwResponseErrorSpireException(message);
-    throwSoapFaultSpireException(message);
+    throwResponseErrorSpireException();
+    throwSoapFaultSpireException();
   }
 
+  /**
+   * Returns content of response element
+   *
+   * @param referenceElementName the name of the response element
+   * @return content derived from names response element
+   */
   public String getResponseElementContent(String referenceElementName) {
     List<Node> nodes = getResponseElementNodes();
     return reduce(nodes, referenceElementName);
   }
 
+  /**
+   * Returns list of immediate child Nodes of named list element
+   *
+   * @param listElementName the named list element
+   * @return list of named list element child nodes
+   */
   public List<Node> getElementChildNodesForList(String listElementName) {
     return getChildrenOfBodyNodes(listElementName);
   }
@@ -96,9 +111,38 @@ public class SpireResponse {
     return nodes;
   }
 
-  /**
-   * public static methods
-   */
+  private void throwSoapFaultSpireException() {
+    String faultString = "";
+    try {
+      SOAPFault fault = message.getSOAPBody().getFault();
+      if (fault != null) {
+        faultString = fault.getFaultString();
+      }
+    } catch (SOAPException e) {
+      LOGGER.warn("Exception: " + Throwables.getStackTraceAsString(e));
+    }
+    if (!StringUtils.isBlank(faultString)) {
+      throw new SpireClientException("soap:Fault: [" + faultString + "]");
+    }
+  }
+
+  private void throwResponseErrorSpireException() {
+    try {
+      NodeList responseNodes = (NodeList) xpath.evaluate(XPATH_EXP_RESPONSE, message.getSOAPBody(), XPathConstants.NODESET);
+      if (responseNodes != null) {
+        Node first = responseNodes.item(0);
+        if (first != null) {
+          NodeList nodes = first.getChildNodes();
+          Node errorNode = (Node) XPathFactory.newInstance().newXPath().evaluate(ERROR, nodes, XPathConstants.NODE);
+          if (errorNode != null) {
+            throw new SpireClientException("ERROR: [" + errorNode.getTextContent() + "]");
+          }
+        }
+      }
+    } catch (XPathExpressionException | SOAPException e) {
+      LOGGER.warn("Exception: " + Throwables.getStackTraceAsString(e));
+    }
+  }
 
   public static Optional<String> getNodeValue(Node singleNode, String name) {
     try {
@@ -126,10 +170,6 @@ public class SpireResponse {
     return nodes;
   }
 
-  /**
-   * private static methods
-   */
-
   private static String reduce(List<Node> nodes, String nodeName) {
     return nodes.stream()
         .filter(node -> node.getNodeName().equals(nodeName))
@@ -156,42 +196,6 @@ public class SpireResponse {
       }
     }
     return reply.toString();
-  }
-
-
-  private static void throwSoapFaultSpireException(SOAPMessage message) {
-    String faultString = "";
-    try {
-      SOAPFault fault = message.getSOAPBody().getFault();
-      if (fault != null) {
-        faultString = fault.getFaultString();
-      }
-    } catch (SOAPException e) {
-      e.printStackTrace();
-    }
-    if (!StringUtils.isBlank(faultString)) {
-      throw new SpireClientException("soap:Fault: [" + faultString + "]");
-    }
-  }
-
-  private static void throwResponseErrorSpireException(SOAPMessage message) {
-    try {
-      SOAPBody soapBody = message.getSOAPBody();
-      XPath xpath = XPathFactory.newInstance().newXPath();
-      NodeList responseNodes = (NodeList) xpath.evaluate(XPATH_EXP_RESPONSE, soapBody, XPathConstants.NODESET);
-      if (responseNodes != null) {
-        Node first = responseNodes.item(0);
-        if (first != null) {
-          NodeList nodes = first.getChildNodes();
-          Node errorNode = (Node) XPathFactory.newInstance().newXPath().evaluate(ERROR, nodes, XPathConstants.NODE);
-          if (errorNode != null) {
-            throw new SpireClientException("ERROR: [" + errorNode.getTextContent() + "]");
-          }
-        }
-      }
-    } catch (XPathExpressionException | SOAPException e) {
-      LOGGER.warn("Exception: " + Throwables.getStackTraceAsString(e));
-    }
   }
 
   private static boolean isEntityReference(Node node) {

@@ -1,6 +1,6 @@
 # SpireClient
 
-Provides utility framework for accessing Spire SoapEndpoint data.
+Provides utility framework for accessing Spire data.
 
 ## How to use
 
@@ -24,7 +24,8 @@ Register SpireClientException in Dropwizard setup environment
 environment.jersey().register(SpireClientException.ServiceExceptionMapper.class);
 ```
 
-SpireReferenceClient - create a SpireClient:
+SpireReferenceClient - create a SpireClient A client requires a client specific
+parser and also needs request and spire configuration data:
 
 ```java
 public class SpireReferenceClient extends SpireClient<String> {
@@ -57,12 +58,11 @@ Use the Client to create a request and get result from sent request:
     request.addChild("VERSION_NO", "1.1");
     request.addChild("WUA_ID", item.getUserId());
     // ...
-    String result = createLiteSarReferenceClient.sendRequest(request);    
+    String result = spireReferenceClient.sendRequest(request);    
 ```
 
-For more complex Soap endpoints you may also need to create your own parser (as well as Client).
+For more complex Soap endpoints you create your own parser (as well as Client).
 This example is used to extract companies from the COMPANY Soap endpoint:
-
 
 ```java
 public class CompanyParser implements SpireParser<List<SpireCompany>> {
@@ -101,3 +101,5 @@ public class CompanyParser implements SpireParser<List<SpireCompany>> {
   }
 }   
 ```
+
+For more examples of how to use the SpireClient see the lite-customer-service project

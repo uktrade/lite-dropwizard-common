@@ -18,6 +18,12 @@ import javax.xml.soap.SOAPConnectionFactory;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
 
+/**
+ * SpireClient
+ * Used to call Spire and extract data
+ *
+ * @param <T> generic type parameter
+ */
 public class SpireClient<T> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(SpireClient.class);
@@ -27,25 +33,38 @@ public class SpireClient<T> {
 
   private final SpireParser<T> parser;
 
-  private final String nameSpace;
+  private final String namespace;
   private final String requestChildName;
   private final boolean useSpirePrefix;
   private final String username;
   private final String password;
   private final String url;
 
+  /**
+   * SpireClient
+   *
+   * @param parser        a client specific parser implements SpireParser interface {@link SpireParser}
+   * @param clientConfig  spire connection details
+   * @param requestConfig configuration relating to specific Client soap endpoint
+   */
   public SpireClient(SpireParser<T> parser, SpireClientConfig clientConfig, SpireRequestConfig requestConfig) {
     this.parser = parser;
     this.username = clientConfig.getUsername();
     this.password = clientConfig.getPassword();
     this.url = clientConfig.getUrl();
-    this.nameSpace = requestConfig.getNameSpace();
+    this.namespace = requestConfig.getNamespace();
     this.requestChildName = requestConfig.getRequestChildName();
     this.useSpirePrefix = requestConfig.isUseSpirePrefix();
   }
 
+  /**
+   * Make a client call to Spire
+   *
+   * @param request request created by SpireClient
+   * @return generic type parameter
+   */
   public T sendRequest(SpireRequest request) {
-    SpireResponse spireResponse = getSpireResponse(request, nameSpace);
+    SpireResponse spireResponse = getSpireResponse(request, namespace);
 
     // Check for SoapResponse Errors - throws SpireClientException if found
     spireResponse.checkForErrors();
@@ -53,8 +72,13 @@ public class SpireClient<T> {
     return parser.parseResponse(spireResponse);
   }
 
+  /**
+   * Create a SpireRequest
+   *
+   * @return SpireRequest
+   */
   public SpireRequest createRequest() {
-    return new SpireRequest(createRequestSoapMessage(nameSpace, requestChildName, useSpirePrefix));
+    return new SpireRequest(createRequestSoapMessage(namespace, requestChildName, useSpirePrefix));
   }
 
   private SpireResponse getSpireResponse(SpireRequest request, String urlSuffix) {
