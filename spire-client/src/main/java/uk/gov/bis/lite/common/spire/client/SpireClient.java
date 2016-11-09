@@ -135,7 +135,7 @@ public class SpireClient<T> {
     try {
       ByteArrayOutputStream out = new ByteArrayOutputStream();
       message.writeTo(out);
-      LOGGER.info(type + ": " + out.toString());
+      LOGGER.trace(type + ": " + out.toString());
     } catch (IOException | SOAPException e) {
       LOGGER.error("error", e);
     }

@@ -1,5 +1,7 @@
 package uk.gov.bis.lite.common.spire.client;
 
+import org.apache.commons.lang3.StringUtils;
+
 import javax.xml.soap.SOAPElement;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
@@ -27,7 +29,7 @@ public class SpireRequest {
   }
 
   /**
-   * Add a child element to soap body.
+   * Add a child element to soap body only if the element context is not null or empty
    * <p>
    * Example:
    * <pre>
@@ -41,9 +43,11 @@ public class SpireRequest {
    */
   public void addChild(String childName, String childText) {
     try {
-      SOAPElement child = parent.addChildElement(childName);
-      child.addTextNode(childText);
-      message.saveChanges();
+      if (!StringUtils.isBlank(childText)) {
+        SOAPElement child = parent.addChildElement(childName);
+        child.addTextNode(childText);
+        message.saveChanges();
+      }
     } catch (SOAPException e) {
       throw new RuntimeException("An error occurred adding child element", e);
     }

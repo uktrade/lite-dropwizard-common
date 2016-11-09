@@ -39,7 +39,7 @@ public class SpireResponse {
 
   private static XPath xpath = XPathFactory.newInstance().newXPath();
 
-  SpireResponse(SOAPMessage message) {
+  public SpireResponse(SOAPMessage message) {
     this.message = message;
   }
 
