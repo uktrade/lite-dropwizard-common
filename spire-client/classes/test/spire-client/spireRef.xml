@@ -1,0 +1,9 @@
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+               xmlns:ns="http://www.fivium.co.uk/fox/webservices/ispire/SPIRE_CREATE_OGEL_APP">
+  <soap:Header/>
+  <soap:Body>
+    <ns:RESPONSE>
+      <SPIRE_REF>SPIRE1</SPIRE_REF>
+    </ns:RESPONSE>
+  </soap:Body>
+</soap:Envelope>

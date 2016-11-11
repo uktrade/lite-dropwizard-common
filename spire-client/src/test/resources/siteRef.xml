@@ -1,0 +1,9 @@
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+               xmlns:ns="http://www.fivium.co.uk/fox/webservices/ispire/SPIRE_CREATE_SITE_FOR_SAR">
+  <soap:Header/>
+  <soap:Body>
+    <ns:RESPONSE>
+      <SITE_REF>SITE1</SITE_REF>
+    </ns:RESPONSE>
+  </soap:Body>
+</soap:Envelope>

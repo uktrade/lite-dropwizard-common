@@ -4,19 +4,34 @@ version '1.1'
 apply plugin: 'java'
 apply plugin: 'maven-publish'
 
+apply plugin: 'idea'
+idea {
+  module {
+    inheritOutputDirs = false
+    outputDir = file('build/classes/main')
+    testOutputDir = file('build/classes/test')
+  }
+}
+
 sourceCompatibility = 1.8
 
 repositories {
-    mavenCentral()
+  mavenCentral()
 }
 
 dependencies {
-    compileOnly 'io.dropwizard:dropwizard-core:1.0.3'
-    testCompile group: 'junit', name: 'junit', version: '4.11'
+  compileOnly 'io.dropwizard:dropwizard-core:1.0.3'
+
+  testCompile 'org.slf4j:slf4j-api:1.7.21'
+  testCompile 'org.slf4j:slf4j-jdk14:1.7.21'
+  testCompile group: 'junit', name: 'junit', version: '4.11'
+  testCompile 'org.assertj:assertj-core:3.4.1'
+  testCompile 'com.google.guava:guava-testlib:19.0'
 }
 
 publishing {
   publications {
+
     mavenJava(MavenPublication) {
       from components.java
       artifacts {
