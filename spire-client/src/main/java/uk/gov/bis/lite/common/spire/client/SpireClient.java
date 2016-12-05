@@ -1,8 +1,13 @@
 package uk.gov.bis.lite.common.spire.client;
 
 
+import com.google.common.base.Throwables;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.gov.bis.lite.common.spire.client.errorhandler.DefaultErrorHandler;
+import uk.gov.bis.lite.common.spire.client.errorhandler.AbstractErrorHandler;
+import uk.gov.bis.lite.common.spire.client.exception.SpireClientException;
 import uk.gov.bis.lite.common.spire.client.parser.SpireParser;
 
 import java.io.ByteArrayOutputStream;
@@ -16,6 +21,7 @@ import javax.xml.soap.SOAPBody;
 import javax.xml.soap.SOAPConnection;
 import javax.xml.soap.SOAPConnectionFactory;
 import javax.xml.soap.SOAPException;
+import javax.xml.soap.SOAPFault;
 import javax.xml.soap.SOAPMessage;
 
 /**
@@ -39,6 +45,7 @@ public class SpireClient<T> {
   private final String username;
   private final String password;
   private final String url;
+  private final AbstractErrorHandler errorHandler;
 
   /**
    * SpireClient
@@ -55,6 +62,19 @@ public class SpireClient<T> {
     this.namespace = requestConfig.getNamespace();
     this.requestChildName = requestConfig.getRequestChildName();
     this.useSpirePrefix = requestConfig.isUseSpirePrefix();
+    this.errorHandler = new DefaultErrorHandler();
+  }
+
+  public SpireClient(SpireParser<T> parser, SpireClientConfig clientConfig,
+                     SpireRequestConfig requestConfig, AbstractErrorHandler errorHandler) {
+    this.parser = parser;
+    this.username = clientConfig.getUsername();
+    this.password = clientConfig.getPassword();
+    this.url = clientConfig.getUrl();
+    this.namespace = requestConfig.getNamespace();
+    this.requestChildName = requestConfig.getRequestChildName();
+    this.useSpirePrefix = requestConfig.isUseSpirePrefix();
+    this.errorHandler = errorHandler;
   }
 
   /**
@@ -65,10 +85,10 @@ public class SpireClient<T> {
    */
   public T sendRequest(SpireRequest request) {
     SpireResponse spireResponse = getSpireResponse(request, namespace);
-
-    // Check for SoapResponse Errors - throws SpireClientException if found
-    spireResponse.checkForErrors();
-
+    if(errorHandler.failOnSoapFault()) {
+      throwSoapFaultSpireException(spireResponse.getMessage());
+    }
+    errorHandler.checkResponse(spireResponse);
     return parser.parseResponse(spireResponse);
   }
 
@@ -128,6 +148,21 @@ public class SpireClient<T> {
           LOGGER.error("Error occurred closing SOAP connection. ", e);
         }
       }
+    }
+  }
+
+  private void throwSoapFaultSpireException(SOAPMessage message) {
+    String faultString = "";
+    try {
+      SOAPFault fault = message.getSOAPBody().getFault();
+      if (fault != null) {
+        faultString = fault.getFaultString();
+      }
+    } catch (SOAPException e) {
+      LOGGER.warn("Exception: " + Throwables.getStackTraceAsString(e));
+    }
+    if (!StringUtils.isBlank(faultString)) {
+      throw new SpireClientException("soap:Fault: [" + faultString + "]");
     }
   }
 

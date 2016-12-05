@@ -44,16 +44,6 @@ public class SpireResponse {
   }
 
   /**
-   * Checks SpireResponse for recognised error conditions
-   *
-   * @throws SpireClientException thrown when error or fault detected
-   */
-  void checkForErrors() {
-    throwResponseErrorSpireException();
-    throwSoapFaultSpireException();
-  }
-
-  /**
    * Returns content of response element
    *
    * @param referenceElementName the name of the response element
@@ -111,39 +101,6 @@ public class SpireResponse {
     return nodes;
   }
 
-  private void throwSoapFaultSpireException() {
-    String faultString = "";
-    try {
-      SOAPFault fault = message.getSOAPBody().getFault();
-      if (fault != null) {
-        faultString = fault.getFaultString();
-      }
-    } catch (SOAPException e) {
-      LOGGER.warn("Exception: " + Throwables.getStackTraceAsString(e));
-    }
-    if (!StringUtils.isBlank(faultString)) {
-      throw new SpireClientException("soap:Fault: [" + faultString + "]");
-    }
-  }
-
-  private void throwResponseErrorSpireException() {
-    try {
-      NodeList responseNodes = (NodeList) xpath.evaluate(XPATH_EXP_RESPONSE, message.getSOAPBody(), XPathConstants.NODESET);
-      if (responseNodes != null) {
-        Node first = responseNodes.item(0);
-        if (first != null) {
-          NodeList nodes = first.getChildNodes();
-          Node errorNode = (Node) XPathFactory.newInstance().newXPath().evaluate(ERROR, nodes, XPathConstants.NODE);
-          if (errorNode != null) {
-            throw new SpireClientException("ERROR: [" + errorNode.getTextContent() + "]");
-          }
-        }
-      }
-    } catch (XPathExpressionException | SOAPException e) {
-      LOGGER.warn("Exception: " + Throwables.getStackTraceAsString(e));
-    }
-  }
-
   public static Optional<String> getNodeValue(Node singleNode, String name) {
     try {
       Node node = (Node) xpath.evaluate(name, singleNode, XPathConstants.NODE);
@@ -168,6 +125,14 @@ public class SpireResponse {
       e.printStackTrace();
     }
     return nodes;
+  }
+
+  public SOAPMessage getMessage() {
+    return message;
+  }
+
+  public void setMessage(SOAPMessage message) {
+    this.message = message;
   }
 
   private static String reduce(List<Node> nodes, String nodeName) {
