@@ -9,6 +9,7 @@ public class SpireClientException extends RuntimeException {
 
   /**
    * SpireClientException
+   *
    * @param info information on exception
    */
   public SpireClientException(String info) {

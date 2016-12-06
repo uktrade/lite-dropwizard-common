@@ -51,43 +51,10 @@ public class SpireClient<T> {
   /**
    * SpireClient
    *
-   * @param parser        a client specific parser implements SpireParser interface {@link SpireParser}
-   * @param clientConfig  spire connection details
-   * @param requestConfig configuration relating to specific Client soap endpoint
-   */
-  public SpireClient(SpireParser<T> parser, SpireClientConfig clientConfig, SpireRequestConfig requestConfig) {
-    this.parser = parser;
-    this.username = clientConfig.getUsername();
-    this.password = clientConfig.getPassword();
-    this.url = clientConfig.getUrl();
-    this.namespace = requestConfig.getNamespace();
-    this.requestChildName = requestConfig.getRequestChildName();
-    this.useSpirePrefix = requestConfig.isUseSpirePrefix();
-    this.errorHandler = new DefaultErrorNodeErrorHandler();
-    this.failOnSoapFault = true;
-  }
-
-  /**
-   * SpireClient
-   *
-   * @param errorHandler custom error node handling
-   */
-  public SpireClient(SpireParser<T> parser, SpireClientConfig clientConfig, SpireRequestConfig requestConfig,
-                     ErrorHandler errorHandler) {
-    this.parser = parser;
-    this.username = clientConfig.getUsername();
-    this.password = clientConfig.getPassword();
-    this.url = clientConfig.getUrl();
-    this.namespace = requestConfig.getNamespace();
-    this.requestChildName = requestConfig.getRequestChildName();
-    this.useSpirePrefix = requestConfig.isUseSpirePrefix();
-    this.errorHandler = errorHandler;
-    this.failOnSoapFault = true;
-  }
-
-  /**
-   * SpireClient
-   *
+   * @param parser          a client specific parser implements SpireParser interface {@link SpireParser}
+   * @param clientConfig    spire connection details
+   * @param requestConfig   configuration relating to specific Client soap endpoint
+   * @param errorHandler    custom error node handling
    * @param failOnSoapFault direct client to check for SoapFaults or not
    */
   public SpireClient(SpireParser<T> parser, SpireClientConfig clientConfig, SpireRequestConfig requestConfig,
@@ -104,6 +71,25 @@ public class SpireClient<T> {
   }
 
   /**
+   * SpireClient
+   *
+   * Creates SpireClient setting failOnSoapFault to true
+   */
+  public SpireClient(SpireParser<T> parser, SpireClientConfig clientConfig, SpireRequestConfig requestConfig,
+                     ErrorHandler errorHandler) {
+    this(parser, clientConfig, requestConfig, errorHandler, true);
+  }
+
+  /**
+   * SpireClient
+   *
+   * Creates SpireClient with DefaultErrorNodeErrorHandler and sets failOnSoapFault to true
+   */
+  public SpireClient(SpireParser<T> parser, SpireClientConfig clientConfig, SpireRequestConfig requestConfig) {
+    this(parser, clientConfig, requestConfig, new DefaultErrorNodeErrorHandler(), true);
+  }
+
+  /**
    * Make a client call to Spire
    *
    * @param request request created by SpireClient
@@ -115,7 +101,7 @@ public class SpireClient<T> {
     SpireResponse spireResponse = getSpireResponse(request, namespace);
 
     // Check response message for soap fault if configured
-    if(failOnSoapFault) {
+    if (failOnSoapFault) {
       throwSoapFaultSpireException(spireResponse.getMessage());
     }
 

@@ -24,12 +24,12 @@ import javax.xml.xpath.XPathFactory;
  * As an example:
  *
  * {@code
- *   <ns:RESPONSE>
- *    <ERROR>Could not create SAR. The error has been logged.</ERROR>
- *  </ns:RESPONSE>
- *   }
+ *    <ns:RESPONSE>
+ *      <ERROR>Could not create SAR. The error has been logged.</ERROR>
+ *    </ns:RESPONSE>
+ * }
  *
- *  This results int a call to handleError(String errorText) with ERROR element content as errorText
+ * This results int a call to handleError(String errorText) with ERROR element content as errorText
  */
 public abstract class ErrorNodeErrorHandler implements ErrorHandler {
 
@@ -42,11 +42,12 @@ public abstract class ErrorNodeErrorHandler implements ErrorHandler {
 
   /**
    * Checks for any ERROR node text and delegates calls child implementing class mapErrorText method
+   *
    * @param spireResponse wrapped SOAPMessage
    */
   public void checkResponse(SpireResponse spireResponse) {
     Optional<String> optErrorText = getErrorTextContent(spireResponse.getMessage());
-    if(optErrorText.isPresent()) {
+    if (optErrorText.isPresent()) {
       handleError(optErrorText.get());
     }
   }
