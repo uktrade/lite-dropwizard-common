@@ -34,22 +34,24 @@ publishing {
 
     mavenJava(MavenPublication) {
       from components.java
-      artifacts {
-        archives packageJavadoc
-        archives packageSources
+
+      artifact sourceJar {
+        classifier "sources"
+      }
+
+      artifact javadocJar {
+        classifier "javadoc"
       }
     }
   }
 }
 
-task packageJavadoc(type: Jar) {
+task javadocJar(type: Jar) {
   from javadoc
-  classifier = 'javadoc'
 }
 
-task packageSources(type: Jar, dependsOn: 'classes') {
-  from sourceSets.main.allSource
-  classifier = 'sources'
+task sourceJar(type: Jar) {
+  from sourceSets.main.allJava
 }
 
 publishing {

@@ -73,6 +73,11 @@ public class SpireClient<T> {
    * SpireClient
    *
    * Creates SpireClient setting failOnSoapFault to true
+   *
+   * @param parser          a client specific parser implements SpireParser interface {@link SpireParser}
+   * @param clientConfig    spire connection details
+   * @param requestConfig   configuration relating to specific Client soap endpoint
+   * @param errorHandler    custom error node handling
    */
   public SpireClient(SpireParser<T> parser, SpireClientConfig clientConfig, SpireRequestConfig requestConfig,
                      ErrorHandler errorHandler) {
@@ -83,6 +88,10 @@ public class SpireClient<T> {
    * SpireClient
    *
    * Creates SpireClient with DefaultErrorNodeErrorHandler and sets failOnSoapFault to true
+   *
+   * @param parser          a client specific parser implements SpireParser interface {@link SpireParser}
+   * @param clientConfig    spire connection details
+   * @param requestConfig   configuration relating to specific Client soap endpoint
    */
   public SpireClient(SpireParser<T> parser, SpireClientConfig clientConfig, SpireRequestConfig requestConfig) {
     this(parser, clientConfig, requestConfig, new DefaultErrorNodeErrorHandler(), true);
