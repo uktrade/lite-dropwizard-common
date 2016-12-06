@@ -4,7 +4,7 @@ import uk.gov.bis.lite.common.spire.client.exception.SpireClientException;
 
 /**
  * DefaultErrorNodeErrorHandler
- * Default behaviour to throw a SpireClientException which contains the errorText.
+ * Default behaviour throws a SpireClientException which contains the errorText.
  */
 public class DefaultErrorNodeErrorHandler extends ErrorNodeErrorHandler {
 

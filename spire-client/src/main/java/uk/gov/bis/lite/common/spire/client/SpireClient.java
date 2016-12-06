@@ -27,7 +27,6 @@ import javax.xml.soap.SOAPMessage;
  * SpireClient
  * Used to call Spire and extract data
  * By default SpireClient will check response for SoapFault and throw a SpireClientException if found
- * To disable this behaviour call setFailOnSoapFault(false) on SpireClient
  *
  * @param <T> generic type parameter
  */
@@ -47,7 +46,7 @@ public class SpireClient<T> {
   private final String password;
   private final String url;
   private final ErrorHandler errorHandler;
-  private boolean failOnSoapFault;
+  private final boolean failOnSoapFault;
 
   /**
    * SpireClient
@@ -68,8 +67,13 @@ public class SpireClient<T> {
     this.failOnSoapFault = true;
   }
 
-  public SpireClient(SpireParser<T> parser, SpireClientConfig clientConfig,
-                     SpireRequestConfig requestConfig, ErrorHandler errorHandler) {
+  /**
+   * SpireClient
+   *
+   * @param errorHandler custom error node handling
+   */
+  public SpireClient(SpireParser<T> parser, SpireClientConfig clientConfig, SpireRequestConfig requestConfig,
+                     ErrorHandler errorHandler) {
     this.parser = parser;
     this.username = clientConfig.getUsername();
     this.password = clientConfig.getPassword();
@@ -79,6 +83,24 @@ public class SpireClient<T> {
     this.useSpirePrefix = requestConfig.isUseSpirePrefix();
     this.errorHandler = errorHandler;
     this.failOnSoapFault = true;
+  }
+
+  /**
+   * SpireClient
+   *
+   * @param failOnSoapFault direct client to check for SoapFaults or not
+   */
+  public SpireClient(SpireParser<T> parser, SpireClientConfig clientConfig, SpireRequestConfig requestConfig,
+                     ErrorHandler errorHandler, boolean failOnSoapFault) {
+    this.parser = parser;
+    this.username = clientConfig.getUsername();
+    this.password = clientConfig.getPassword();
+    this.url = clientConfig.getUrl();
+    this.namespace = requestConfig.getNamespace();
+    this.requestChildName = requestConfig.getRequestChildName();
+    this.useSpirePrefix = requestConfig.isUseSpirePrefix();
+    this.errorHandler = errorHandler;
+    this.failOnSoapFault = failOnSoapFault;
   }
 
   /**
@@ -111,10 +133,6 @@ public class SpireClient<T> {
    */
   public SpireRequest createRequest() {
     return new SpireRequest(createRequestSoapMessage(namespace, requestChildName, useSpirePrefix));
-  }
-
-  public void setFailOnSoapFault(boolean failOnSoapFault) {
-    this.failOnSoapFault = failOnSoapFault;
   }
 
   private SpireResponse getSpireResponse(SpireRequest request, String urlSuffix) {
