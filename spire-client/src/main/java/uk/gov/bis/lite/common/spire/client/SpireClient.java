@@ -26,7 +26,6 @@ import javax.xml.soap.SOAPMessage;
 /**
  * SpireClient
  * Used to call Spire and extract data
- * By default SpireClient will check response for SoapFault and throw a SpireClientException if found
  *
  * @param <T> generic type parameter
  */

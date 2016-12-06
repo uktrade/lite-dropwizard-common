@@ -1,5 +1,5 @@
 group 'uk.gov.bis.lite'
-version '1.2-SNAPSHOT'
+version '1.2'
 
 apply plugin: 'java'
 apply plugin: 'maven-publish'
