@@ -5,6 +5,7 @@ import uk.gov.bis.lite.common.spire.client.SpireResponse;
 
 /**
  * A SpireClient requires a parser that implements this interface
+ *
  * @param <T> generic type parameter
  */
 public interface SpireParser<T> {

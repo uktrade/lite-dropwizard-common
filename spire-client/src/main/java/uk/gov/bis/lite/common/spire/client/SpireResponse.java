@@ -1,7 +1,5 @@
 package uk.gov.bis.lite.common.spire.client;
 
-import com.google.common.base.Throwables;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.CharacterData;
@@ -9,7 +7,6 @@ import org.w3c.dom.Comment;
 import org.w3c.dom.EntityReference;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import uk.gov.bis.lite.common.spire.client.exception.SpireClientException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +15,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import javax.xml.soap.SOAPException;
-import javax.xml.soap.SOAPFault;
 import javax.xml.soap.SOAPMessage;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
@@ -41,16 +37,6 @@ public class SpireResponse {
 
   public SpireResponse(SOAPMessage message) {
     this.message = message;
-  }
-
-  /**
-   * Checks SpireResponse for recognised error conditions
-   *
-   * @throws SpireClientException thrown when error or fault detected
-   */
-  void checkForErrors() {
-    throwResponseErrorSpireException();
-    throwSoapFaultSpireException();
   }
 
   /**
@@ -111,39 +97,6 @@ public class SpireResponse {
     return nodes;
   }
 
-  private void throwSoapFaultSpireException() {
-    String faultString = "";
-    try {
-      SOAPFault fault = message.getSOAPBody().getFault();
-      if (fault != null) {
-        faultString = fault.getFaultString();
-      }
-    } catch (SOAPException e) {
-      LOGGER.warn("Exception: " + Throwables.getStackTraceAsString(e));
-    }
-    if (!StringUtils.isBlank(faultString)) {
-      throw new SpireClientException("soap:Fault: [" + faultString + "]");
-    }
-  }
-
-  private void throwResponseErrorSpireException() {
-    try {
-      NodeList responseNodes = (NodeList) xpath.evaluate(XPATH_EXP_RESPONSE, message.getSOAPBody(), XPathConstants.NODESET);
-      if (responseNodes != null) {
-        Node first = responseNodes.item(0);
-        if (first != null) {
-          NodeList nodes = first.getChildNodes();
-          Node errorNode = (Node) XPathFactory.newInstance().newXPath().evaluate(ERROR, nodes, XPathConstants.NODE);
-          if (errorNode != null) {
-            throw new SpireClientException("ERROR: [" + errorNode.getTextContent() + "]");
-          }
-        }
-      }
-    } catch (XPathExpressionException | SOAPException e) {
-      LOGGER.warn("Exception: " + Throwables.getStackTraceAsString(e));
-    }
-  }
-
   public static Optional<String> getNodeValue(Node singleNode, String name) {
     try {
       Node node = (Node) xpath.evaluate(name, singleNode, XPathConstants.NODE);
@@ -168,6 +121,14 @@ public class SpireResponse {
       e.printStackTrace();
     }
     return nodes;
+  }
+
+  public SOAPMessage getMessage() {
+    return message;
+  }
+
+  public void setMessage(SOAPMessage message) {
+    this.message = message;
   }
 
   private static String reduce(List<Node> nodes, String nodeName) {

@@ -1,8 +1,12 @@
 package uk.gov.bis.lite.common.spire.client;
 
 
+import com.google.common.base.Throwables;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.gov.bis.lite.common.spire.client.errorhandler.DefaultErrorNodeErrorHandler;
+import uk.gov.bis.lite.common.spire.client.errorhandler.ErrorHandler;
+import uk.gov.bis.lite.common.spire.client.exception.SpireClientException;
 import uk.gov.bis.lite.common.spire.client.parser.SpireParser;
 
 import java.io.ByteArrayOutputStream;
@@ -16,6 +20,7 @@ import javax.xml.soap.SOAPBody;
 import javax.xml.soap.SOAPConnection;
 import javax.xml.soap.SOAPConnectionFactory;
 import javax.xml.soap.SOAPException;
+import javax.xml.soap.SOAPFault;
 import javax.xml.soap.SOAPMessage;
 
 /**
@@ -39,15 +44,20 @@ public class SpireClient<T> {
   private final String username;
   private final String password;
   private final String url;
+  private final ErrorHandler errorHandler;
+  private final boolean failOnSoapFault;
 
   /**
    * SpireClient
    *
-   * @param parser        a client specific parser implements SpireParser interface {@link SpireParser}
-   * @param clientConfig  spire connection details
-   * @param requestConfig configuration relating to specific Client soap endpoint
+   * @param parser          a client specific parser implements SpireParser interface {@link SpireParser}
+   * @param clientConfig    spire connection details
+   * @param requestConfig   configuration relating to specific Client soap endpoint
+   * @param errorHandler    custom error node handling
+   * @param failOnSoapFault direct client to check for SoapFaults or not
    */
-  public SpireClient(SpireParser<T> parser, SpireClientConfig clientConfig, SpireRequestConfig requestConfig) {
+  public SpireClient(SpireParser<T> parser, SpireClientConfig clientConfig, SpireRequestConfig requestConfig,
+                     ErrorHandler errorHandler, boolean failOnSoapFault) {
     this.parser = parser;
     this.username = clientConfig.getUsername();
     this.password = clientConfig.getPassword();
@@ -55,6 +65,27 @@ public class SpireClient<T> {
     this.namespace = requestConfig.getNamespace();
     this.requestChildName = requestConfig.getRequestChildName();
     this.useSpirePrefix = requestConfig.isUseSpirePrefix();
+    this.errorHandler = errorHandler;
+    this.failOnSoapFault = failOnSoapFault;
+  }
+
+  /**
+   * SpireClient
+   *
+   * Creates SpireClient setting failOnSoapFault to true
+   */
+  public SpireClient(SpireParser<T> parser, SpireClientConfig clientConfig, SpireRequestConfig requestConfig,
+                     ErrorHandler errorHandler) {
+    this(parser, clientConfig, requestConfig, errorHandler, true);
+  }
+
+  /**
+   * SpireClient
+   *
+   * Creates SpireClient with DefaultErrorNodeErrorHandler and sets failOnSoapFault to true
+   */
+  public SpireClient(SpireParser<T> parser, SpireClientConfig clientConfig, SpireRequestConfig requestConfig) {
+    this(parser, clientConfig, requestConfig, new DefaultErrorNodeErrorHandler(), true);
   }
 
   /**
@@ -64,11 +95,19 @@ public class SpireClient<T> {
    * @return generic type parameter
    */
   public T sendRequest(SpireRequest request) {
+
+    // Get response
     SpireResponse spireResponse = getSpireResponse(request, namespace);
 
-    // Check for SoapResponse Errors - throws SpireClientException if found
-    spireResponse.checkForErrors();
+    // Check response message for soap fault if configured
+    if (failOnSoapFault) {
+      throwSoapFaultSpireException(spireResponse.getMessage());
+    }
 
+    // Check response for errors
+    errorHandler.checkResponse(spireResponse);
+
+    // Parse and return result
     return parser.parseResponse(spireResponse);
   }
 
@@ -128,6 +167,18 @@ public class SpireClient<T> {
           LOGGER.error("Error occurred closing SOAP connection. ", e);
         }
       }
+    }
+  }
+
+  private void throwSoapFaultSpireException(SOAPMessage message) {
+    try {
+      SOAPFault fault = message.getSOAPBody().getFault();
+      if (fault != null) {
+        String faultInfo = fault.getFaultString() != null ? fault.getFaultString() : "NULL";
+        throw new SpireClientException("soap:Fault: [" + faultInfo + "]");
+      }
+    } catch (SOAPException e) {
+      LOGGER.warn("Exception: " + Throwables.getStackTraceAsString(e));
     }
   }
 
