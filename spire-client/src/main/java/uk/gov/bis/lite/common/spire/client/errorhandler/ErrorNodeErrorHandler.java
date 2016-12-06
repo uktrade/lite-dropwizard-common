@@ -17,30 +17,38 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 /**
- * Extend this class and implement mapErrorText method to define custom error handling
+ * ErrorNodeErrorHandler
+ *
+ * Extend this class and implement handleError(String errorText) method to define custom error handling
+ *
+ * As an example:
+ *
+ * {@code
+ *   <ns:RESPONSE>
+ *    <ERROR>Could not create SAR. The error has been logged.</ERROR>
+ *  </ns:RESPONSE>
+ *   }
+ *
+ *  This results int a call to handleError(String errorText) with ERROR element content as errorText
  */
-public abstract class AbstractErrorHandler implements ErrorHandler {
+public abstract class ErrorNodeErrorHandler implements ErrorHandler {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractErrorHandler.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ErrorNodeErrorHandler.class);
   private static final String ERROR = "ERROR";
   private static final String XPATH_EXP_RESPONSE = "//*[local-name()='RESPONSE']";
   private static final XPath xpath = XPathFactory.newInstance().newXPath();
 
-  public abstract void mapErrorText(String errorText);
+  public abstract void handleError(String errorText);
 
   /**
    * Checks for any ERROR node text and delegates calls child implementing class mapErrorText method
-   * @param spireResponse
+   * @param spireResponse wrapped SOAPMessage
    */
   public void checkResponse(SpireResponse spireResponse) {
     Optional<String> optErrorText = getErrorTextContent(spireResponse.getMessage());
     if(optErrorText.isPresent()) {
-      mapErrorText(optErrorText.get());
+      handleError(optErrorText.get());
     }
-  }
-
-  public boolean failOnSoapFault() {
-    return true;
   }
 
   /**

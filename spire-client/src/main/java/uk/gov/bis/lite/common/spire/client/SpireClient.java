@@ -2,11 +2,10 @@ package uk.gov.bis.lite.common.spire.client;
 
 
 import com.google.common.base.Throwables;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.gov.bis.lite.common.spire.client.errorhandler.DefaultErrorHandler;
-import uk.gov.bis.lite.common.spire.client.errorhandler.AbstractErrorHandler;
+import uk.gov.bis.lite.common.spire.client.errorhandler.DefaultErrorNodeErrorHandler;
+import uk.gov.bis.lite.common.spire.client.errorhandler.ErrorHandler;
 import uk.gov.bis.lite.common.spire.client.exception.SpireClientException;
 import uk.gov.bis.lite.common.spire.client.parser.SpireParser;
 
@@ -27,6 +26,8 @@ import javax.xml.soap.SOAPMessage;
 /**
  * SpireClient
  * Used to call Spire and extract data
+ * By default SpireClient will check response for SoapFault and throw a SpireClientException if found
+ * To disable this behaviour call setFailOnSoapFault(false) on SpireClient
  *
  * @param <T> generic type parameter
  */
@@ -45,7 +46,8 @@ public class SpireClient<T> {
   private final String username;
   private final String password;
   private final String url;
-  private final AbstractErrorHandler errorHandler;
+  private final ErrorHandler errorHandler;
+  private boolean failOnSoapFault;
 
   /**
    * SpireClient
@@ -62,11 +64,12 @@ public class SpireClient<T> {
     this.namespace = requestConfig.getNamespace();
     this.requestChildName = requestConfig.getRequestChildName();
     this.useSpirePrefix = requestConfig.isUseSpirePrefix();
-    this.errorHandler = new DefaultErrorHandler();
+    this.errorHandler = new DefaultErrorNodeErrorHandler();
+    this.failOnSoapFault = true;
   }
 
   public SpireClient(SpireParser<T> parser, SpireClientConfig clientConfig,
-                     SpireRequestConfig requestConfig, AbstractErrorHandler errorHandler) {
+                     SpireRequestConfig requestConfig, ErrorHandler errorHandler) {
     this.parser = parser;
     this.username = clientConfig.getUsername();
     this.password = clientConfig.getPassword();
@@ -75,6 +78,7 @@ public class SpireClient<T> {
     this.requestChildName = requestConfig.getRequestChildName();
     this.useSpirePrefix = requestConfig.isUseSpirePrefix();
     this.errorHandler = errorHandler;
+    this.failOnSoapFault = true;
   }
 
   /**
@@ -84,11 +88,19 @@ public class SpireClient<T> {
    * @return generic type parameter
    */
   public T sendRequest(SpireRequest request) {
+
+    // Get response
     SpireResponse spireResponse = getSpireResponse(request, namespace);
-    if(errorHandler.failOnSoapFault()) {
+
+    // Check response message for soap fault if configured
+    if(failOnSoapFault) {
       throwSoapFaultSpireException(spireResponse.getMessage());
     }
+
+    // Check response for errors
     errorHandler.checkResponse(spireResponse);
+
+    // Parse and return result
     return parser.parseResponse(spireResponse);
   }
 
@@ -99,6 +111,10 @@ public class SpireClient<T> {
    */
   public SpireRequest createRequest() {
     return new SpireRequest(createRequestSoapMessage(namespace, requestChildName, useSpirePrefix));
+  }
+
+  public void setFailOnSoapFault(boolean failOnSoapFault) {
+    this.failOnSoapFault = failOnSoapFault;
   }
 
   private SpireResponse getSpireResponse(SpireRequest request, String urlSuffix) {
@@ -152,17 +168,14 @@ public class SpireClient<T> {
   }
 
   private void throwSoapFaultSpireException(SOAPMessage message) {
-    String faultString = "";
     try {
       SOAPFault fault = message.getSOAPBody().getFault();
       if (fault != null) {
-        faultString = fault.getFaultString();
+        String faultInfo = fault.getFaultString() != null ? fault.getFaultString() : "NULL";
+        throw new SpireClientException("soap:Fault: [" + faultInfo + "]");
       }
     } catch (SOAPException e) {
       LOGGER.warn("Exception: " + Throwables.getStackTraceAsString(e));
-    }
-    if (!StringUtils.isBlank(faultString)) {
-      throw new SpireClientException("soap:Fault: [" + faultString + "]");
     }
   }
 
