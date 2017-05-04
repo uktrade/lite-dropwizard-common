@@ -130,9 +130,10 @@ public class SpireClient<T> {
   }
 
   private SpireResponse getSpireResponse(SpireRequest request, String urlSuffix) {
-    logSoapMessage("request", request.getSoapMessage());
-    SOAPMessage response = doExecuteRequest(request, urlSuffix);
-    logSoapMessage("response", response);
+    String requestUrl = url + urlSuffix;
+    logSoapMessage("request", request.getSoapMessage(), requestUrl);
+    SOAPMessage response = doExecuteRequest(request, requestUrl);
+    logSoapMessage("response", response, requestUrl);
     if (response == null) {
       throw new SpireClientException("Empty response from SOAP client");
     }
@@ -164,11 +165,11 @@ public class SpireClient<T> {
     headers.addHeader("Authorization", "Basic " + authorization);
   }
 
-  private SOAPMessage doExecuteRequest(SpireRequest request, String urlSuffix) {
+  private SOAPMessage doExecuteRequest(SpireRequest request, String url) {
     SOAPConnection conn = null;
     try {
       conn = SOAPConnectionFactory.newInstance().createConnection();
-      return conn.call(request.getSoapMessage(), url + urlSuffix);
+      return conn.call(request.getSoapMessage(), url);
     } catch (SOAPException e) {
       throw new RuntimeException("Error occurred establishing connection with SOAP client", e);
     } finally {
@@ -194,13 +195,25 @@ public class SpireClient<T> {
     }
   }
 
-  private void logSoapMessage(String type, SOAPMessage message) {
-    try {
-      ByteArrayOutputStream out = new ByteArrayOutputStream();
-      message.writeTo(out);
-      LOGGER.trace(type + ": " + out.toString());
-    } catch (IOException | SOAPException e) {
-      LOGGER.error("error", e);
+  /**
+   * Logs a serialised SOAP Message, {@code message} is only serialised if the log level is INFO log level is enabled
+   * @param type the type of SOAP mesage
+   * @param message the message
+   * @param url the originating url of {@code message}
+   */
+  private void logSoapMessage(String type, SOAPMessage message, String url) {
+    if (LOGGER.isInfoEnabled()) {
+      try {
+        String serialisedMessage = "";
+        if (message != null) {
+          ByteArrayOutputStream out = new ByteArrayOutputStream();
+          message.writeTo(out);
+          serialisedMessage = out.toString();
+        }
+        LOGGER.info("SOAP " + type + " - url: " + url + ", message: " + serialisedMessage);
+      } catch (IOException | SOAPException e) {
+        LOGGER.error("error", e);
+      }
     }
   }
 
