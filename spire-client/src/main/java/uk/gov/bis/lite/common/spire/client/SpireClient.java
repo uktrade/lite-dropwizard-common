@@ -133,6 +133,9 @@ public class SpireClient<T> {
     logSoapMessage("request", request.getSoapMessage());
     SOAPMessage response = doExecuteRequest(request, urlSuffix);
     logSoapMessage("response", response);
+    if (response == null) {
+      throw new SpireClientException("Empty response from SOAP client");
+    }
     return new SpireResponse(response);
   }
 
