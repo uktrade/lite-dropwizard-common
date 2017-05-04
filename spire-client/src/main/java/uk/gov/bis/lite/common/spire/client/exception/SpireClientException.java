@@ -19,8 +19,8 @@ public class SpireClientException extends RuntimeException {
   /**
    * SpireClientException
    *
-   * @param info
-   * @param cause
+   * @param info information on exception
+   * @param cause the cause
    */
   public SpireClientException(String info, Throwable cause) {
     super("Spire Client Exception: " + info, cause);

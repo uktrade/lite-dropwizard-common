@@ -210,7 +210,7 @@ public class SpireClient<T> {
           message.writeTo(out);
           serialisedMessage = out.toString();
         }
-        LOGGER.info("SOAP " + type + " - url: " + url + ", message: " + serialisedMessage);
+        LOGGER.info("SOAP " + type + " - url: " + url + ", message:\n" + serialisedMessage);
       } catch (IOException | SOAPException e) {
         LOGGER.error("error", e);
       }
