@@ -155,7 +155,7 @@ public class SpireClient<T> {
       message.saveChanges();
       return message;
     } catch (SOAPException | UnsupportedEncodingException e) {
-      throw new RuntimeException("Error occurred creating the SOAP request for retrieving Customer Information from Spire", e);
+      throw new SpireClientException("Error occurred creating the SOAP request for retrieving Customer Information from Spire", e);
     }
   }
 
@@ -171,7 +171,7 @@ public class SpireClient<T> {
       conn = SOAPConnectionFactory.newInstance().createConnection();
       return conn.call(request.getSoapMessage(), url);
     } catch (SOAPException e) {
-      throw new RuntimeException("Error occurred establishing connection with SOAP client", e);
+      throw new SpireClientException("Error occurred establishing connection with SOAP client", e);
     } finally {
       if (conn != null) {
         try {

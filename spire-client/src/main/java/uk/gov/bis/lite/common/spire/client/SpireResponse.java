@@ -7,6 +7,7 @@ import org.w3c.dom.Comment;
 import org.w3c.dom.EntityReference;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import uk.gov.bis.lite.common.spire.client.exception.SpireClientException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,7 +69,7 @@ public class SpireResponse {
         nodes = list(nodeList.item(0).getChildNodes());
       }
     } catch (SOAPException | XPathExpressionException e) {
-      LOGGER.error("", e);
+      throw new SpireClientException("An error occurred while extracting the SOAP Response Body", e);
     }
     return nodes;
   }
@@ -81,7 +82,7 @@ public class SpireResponse {
         nodes.addAll(list(node.getChildNodes()));
       });
     } catch (SOAPException | XPathExpressionException e) {
-      throw new RuntimeException("An error occurred while extracting the SOAP Response Body", e);
+      throw new SpireClientException("An error occurred while extracting the SOAP Response Body", e);
     }
     return nodes;
   }
@@ -92,7 +93,7 @@ public class SpireResponse {
       NodeList nodeList = (NodeList) xpath.evaluate(xpathExpression, message.getSOAPBody(), XPathConstants.NODESET);
       nodes = list(nodeList);
     } catch (SOAPException | XPathExpressionException e) {
-      throw new RuntimeException("An error occurred while extracting the SOAP Response Body", e);
+      throw new SpireClientException("An error occurred while extracting the SOAP Response Body", e);
     }
     return nodes;
   }
@@ -104,7 +105,7 @@ public class SpireResponse {
         return Optional.of(node.getTextContent());
       }
     } catch (XPathExpressionException e) {
-      throw new RuntimeException("Error occurred while parsing the SOAP response body", e);
+      throw new SpireClientException("Error occurred while parsing the SOAP response body", e);
     }
     return Optional.empty();
   }
