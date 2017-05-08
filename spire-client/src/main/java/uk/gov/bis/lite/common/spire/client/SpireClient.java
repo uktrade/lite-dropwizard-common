@@ -130,7 +130,7 @@ public class SpireClient<T> {
   }
 
   private SpireResponse getSpireResponse(SpireRequest request, String urlSuffix) {
-    String requestUrl = url + urlSuffix;
+    String requestUrl = createRequestUrl(url, urlSuffix);
     logSoapMessage("request", request.getSoapMessage(), requestUrl);
     SOAPMessage response = doExecuteRequest(request, requestUrl);
     logSoapMessage("response", response, requestUrl);
@@ -217,4 +217,12 @@ public class SpireClient<T> {
     }
   }
 
+  private String createRequestUrl(String url, String urlSuffix){
+    if (url.charAt(url.length() -1) != '/') {
+      return url + '/' + urlSuffix;
+    }
+    else {
+      return url + urlSuffix;
+    }
+  }
 }

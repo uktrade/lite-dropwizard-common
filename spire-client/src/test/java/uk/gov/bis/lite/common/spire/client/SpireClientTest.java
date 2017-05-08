@@ -65,4 +65,23 @@ public class SpireClientTest {
         .isExactlyInstanceOf(SpireClientException.class)
         .hasMessageEndingWith("Empty response from SOAP client");
   }
+
+  @Test
+  public void testUrlMissingTrailingSlash() throws Exception {
+    SpireParser<String> parser = new ReferenceParser("ELEMENT");
+    // Note, url missing trailing slash
+    SpireClientConfig clientConfig = new SpireClientConfig("username", "password", "http://localhost:8089/some-path");
+    SpireRequestConfig requestConfig = new SpireRequestConfig("NAMESPACE", "CHILD", false);
+    SpireClient<String> client = new SpireClient<>(parser, clientConfig, requestConfig);
+    stubFor(post(urlEqualTo("/some-path/NAMESPACE"))
+        .willReturn(aResponse()
+            .withStatus(200)
+            .withHeader("Content-Type", "application/soap+xml; charset=utf-8")
+            .withBodyFile("simple.xml")
+        )
+    );
+    SpireRequest request = client.createRequest();
+    String response = client.sendRequest(request);
+    assertThat(response).isEqualTo("TEXT");
+  }
 }
