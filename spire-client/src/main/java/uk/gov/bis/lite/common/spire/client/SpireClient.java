@@ -218,11 +218,11 @@ public class SpireClient<T> {
   }
 
   private String createRequestUrl(String url, String urlSuffix){
-    if (url.charAt(url.length() -1) != '/') {
-      return url + '/' + urlSuffix;
+    if (url.endsWith("/")) {
+      return url + urlSuffix;
     }
     else {
-      return url + urlSuffix;
+      return url + '/' + urlSuffix;
     }
   }
 }
