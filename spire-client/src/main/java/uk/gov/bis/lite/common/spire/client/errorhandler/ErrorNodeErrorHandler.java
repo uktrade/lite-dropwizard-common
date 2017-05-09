@@ -69,7 +69,7 @@ public abstract class ErrorNodeErrorHandler implements ErrorHandler {
         }
       }
     } catch (XPathExpressionException | SOAPException e) {
-      LOGGER.warn("Exception: " + Throwables.getStackTraceAsString(e));
+      LOGGER.warn("Exception: {}", Throwables.getStackTraceAsString(e));
     }
     return Optional.empty();
   }

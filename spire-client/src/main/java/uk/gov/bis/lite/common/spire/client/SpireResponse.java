@@ -119,7 +119,7 @@ public class SpireResponse {
         nodes = list(child.getChildNodes());
       }
     } catch (XPathExpressionException e) {
-      e.printStackTrace();
+      throw new SpireClientException("An error occurred while extracting the SOAP Response Body", e);
     }
     return nodes;
   }

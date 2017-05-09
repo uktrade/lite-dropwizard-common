@@ -191,13 +191,13 @@ public class SpireClient<T> {
         throw new SpireClientException("soap:Fault: [" + faultInfo + "]");
       }
     } catch (SOAPException e) {
-      LOGGER.warn("Exception: " + Throwables.getStackTraceAsString(e));
+      LOGGER.warn("Exception: {}", Throwables.getStackTraceAsString(e));
     }
   }
 
   /**
    * Logs a serialised SOAP Message, {@code message} is only serialised if the log level is INFO log level is enabled
-   * @param type the type of SOAP mesage
+   * @param type the type of SOAP message
    * @param message the message
    * @param url the originating url of {@code message}
    */
@@ -210,7 +210,7 @@ public class SpireClient<T> {
           message.writeTo(out);
           serialisedMessage = out.toString();
         }
-        LOGGER.info("SOAP " + type + " - url: " + url + ", message:\n" + serialisedMessage);
+        LOGGER.info("SOAP {} - url: {}, message:\n{}", type, url, serialisedMessage);
       } catch (IOException | SOAPException e) {
         LOGGER.error("error", e);
       }
