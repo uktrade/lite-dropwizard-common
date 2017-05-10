@@ -17,6 +17,16 @@ public class SpireClientException extends RuntimeException {
   }
 
   /**
+   * SpireClientException
+   *
+   * @param info information on exception
+   * @param cause the cause
+   */
+  public SpireClientException(String info, Throwable cause) {
+    super("Spire Client Exception: " + info, cause);
+  }
+
+  /**
    * Provided for Dropwizard/Jersey integration
    */
   public static class ServiceExceptionMapper implements ExceptionMapper<SpireClientException> {

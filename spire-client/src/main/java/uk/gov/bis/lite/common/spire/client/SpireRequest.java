@@ -1,6 +1,7 @@
 package uk.gov.bis.lite.common.spire.client;
 
 import org.apache.commons.lang3.StringUtils;
+import uk.gov.bis.lite.common.spire.client.exception.SpireClientException;
 
 import javax.xml.soap.SOAPElement;
 import javax.xml.soap.SOAPException;
@@ -49,7 +50,7 @@ public class SpireRequest {
         message.saveChanges();
       }
     } catch (SOAPException e) {
-      throw new RuntimeException("An error occurred adding child element", e);
+      throw new SpireClientException("An error occurred adding child element", e);
     }
   }
 
@@ -80,7 +81,7 @@ public class SpireRequest {
       child.addTextNode(childText);
       message.saveChanges();
     } catch (SOAPException e) {
-      throw new RuntimeException("An error occurred adding child element", e);
+      throw new SpireClientException("An error occurred adding child element", e);
     }
   }
 
