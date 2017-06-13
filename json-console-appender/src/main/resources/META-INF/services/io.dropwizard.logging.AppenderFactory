@@ -1,0 +1,2 @@
+uk.gov.bis.lite.common.logging.JsonConsoleAppenderFactory
+uk.gov.bis.lite.common.logging.JsonConsoleAccessAppenderFactory

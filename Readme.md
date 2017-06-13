@@ -26,6 +26,11 @@ repositories {
 Support for request tracing with Correlation IDs for [Jersey](https://jersey.java.net/) (the RESTful Web Services
 framework that [Dropwizard](http://www.dropwizard.io/) runs on) via a pair of filters.
 
+### [JSON Console Appender](json-console-appender)
+
+Allow logging to the console, via [logback](https://logback.qos.ch/) which [Dropwizard](http://www.dropwizard.io/) uses 
+for logging, to log data in a JSON format instead of just plain text.
+
 ### [Spire Client](spire-client)
 
 Support for accessing data from Spire.
