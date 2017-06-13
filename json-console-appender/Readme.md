@@ -14,7 +14,7 @@ Add the dependencies to your project for this library and its underlying depende
 ```gradle
 compile 'net.logstash.logback:logstash-logback-encoder:4.10'
 compile 'ch.qos.logback.contrib:logback-jackson:0.1.5'
-compile 'uk.gov.bis.lite:json-console-appender:1.0'
+compile 'uk.gov.bis.lite:json-console-appender:1.1'
 ```
 
 You can then change the config file for your Dropwizard project (src/main/resources/config.yaml) to use the new 

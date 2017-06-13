@@ -49,13 +49,25 @@ public class JsonConsoleAccessAppenderFactory<E extends DeferredProcessingAware>
                            LevelFilterFactory<E> levelFilterFactory, AsyncAppenderFactory<E> asyncAppenderFactory) {
     LogstashAccessEncoder encoder = new LogstashAccessEncoder();
     encoder.setContext(context);
+    LogstashAccessFieldNames fieldNames = encoder.getFieldNames();
+    fieldNames.setMessage("message");
+    fieldNames.setFieldsMethod("method");
+    fieldNames.setFieldsProtocol("protocol");
+    fieldNames.setFieldsStatusCode("status_code");
+    fieldNames.setFieldsRequestedUrl("requested_url");
+    fieldNames.setFieldsRequestedUri("requested_uri");
+    fieldNames.setFieldsRemoteHost("remote_host");
+    fieldNames.setFieldsHostname("HOSTNAME");
+    fieldNames.setFieldsRemoteUser("remote_user");
+    fieldNames.setFieldsContentLength("content_length");
+    fieldNames.setFieldsElapsedTime("elapsed_time");
     // To log request headers you have to explicitly set the field name for it
     //  https://github.com/logstash/logstash-logback-encoder#header-fields
-    LogstashAccessFieldNames fieldNames = encoder.getFieldNames();
-    fieldNames.setFieldsRequestHeaders("@fields.request_headers");
+    fieldNames.setFieldsRequestHeaders("request_headers");
     encoder.setFieldNames(fieldNames);
     // Lower case header names makes matching a bit easier, so later analysis might be a bit more reliable
     encoder.setLowerCaseHeaderNames(true);
+    encoder.setCustomFields("{\"access-log\":true}");
     encoder.start();
 
 
