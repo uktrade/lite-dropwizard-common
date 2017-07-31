@@ -11,7 +11,6 @@ public interface ReadinessService {
 
   /**
    * Is the service ready to receive requests, are all components loaded with data?
-   * Defaults to {@code true}
    * @return readiness of the service
    */
   boolean isReady();
