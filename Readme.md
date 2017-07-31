@@ -31,6 +31,10 @@ framework that [Dropwizard](http://www.dropwizard.io/) runs on) via a pair of fi
 Allow logging to the console, via [logback](https://logback.qos.ch/) which [Dropwizard](http://www.dropwizard.io/) uses 
 for logging, to log data in a JSON format instead of just plain text.
 
+### [Readiness Metric](readiness-metric)
+
+Support for adding readiness metrics accessible via the admin port.  
+
 ### [Spire Client](spire-client)
 
 Support for accessing data from Spire.
