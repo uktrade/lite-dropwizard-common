@@ -1,6 +1,8 @@
 package uk.gov.bis.lite.common.spire.client;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.gov.bis.lite.common.spire.client.exception.SpireClientException;
 
 import javax.xml.soap.SOAPElement;
@@ -12,8 +14,10 @@ import javax.xml.soap.SOAPMessage;
  */
 public class SpireRequest {
 
-  private SOAPMessage message;
-  private SOAPElement parent;
+  private static final Logger LOGGER = LoggerFactory.getLogger(SpireRequest.class);
+
+  private final SOAPMessage message;
+  private final SOAPElement parent;
 
   /**
    * A SpireRequest wraps a SOAPMessage
@@ -22,10 +26,15 @@ public class SpireRequest {
    */
   public SpireRequest(SOAPMessage message) {
     this.message = message;
+    this.parent = getParent(message);
+  }
+
+  private SOAPElement getParent(SOAPMessage soapMessage) {
     try {
-      this.parent = (SOAPElement) message.getSOAPPart().getEnvelope().getBody().getChildElements().next();
+      return (SOAPElement) soapMessage.getSOAPPart().getEnvelope().getBody().getChildElements().next();
     } catch (SOAPException e) {
-      e.printStackTrace();
+      LOGGER.error("Unable to get parent of soap message", e);
+      return null;
     }
   }
 

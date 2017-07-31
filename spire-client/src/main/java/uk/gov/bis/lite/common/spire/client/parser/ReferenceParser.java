@@ -9,7 +9,7 @@ import uk.gov.bis.lite.common.spire.client.SpireResponse;
  */
 public class ReferenceParser implements SpireParser<String> {
 
-  private String referenceElementName;
+  private final String referenceElementName;
 
   /**
    * @param referenceElementName name of single element

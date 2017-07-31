@@ -1,7 +1,5 @@
 package uk.gov.bis.lite.common.spire.client;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.CharacterData;
 import org.w3c.dom.Comment;
 import org.w3c.dom.EntityReference;
@@ -27,13 +25,11 @@ import javax.xml.xpath.XPathFactory;
  */
 public class SpireResponse {
 
-  protected static final Logger LOGGER = LoggerFactory.getLogger(SpireResponse.class);
-
-  private SOAPMessage message;
-
   private static final String XPATH_EXP_RESPONSE = "//*[local-name()='RESPONSE']";
 
-  private static XPath xpath = XPathFactory.newInstance().newXPath();
+  private static final XPath xpath = XPathFactory.newInstance().newXPath();
+
+  private final SOAPMessage message;
 
   public SpireResponse(SOAPMessage message) {
     this.message = message;
