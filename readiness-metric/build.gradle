@@ -30,11 +30,11 @@ publishing {
   repositories {
     maven {
       name "snapshots"
-      url "http://nexus.mgmt.int.licensing.service.trade.gov.uk/repository/maven-snapshots/"
+      url "http://nexus.mgmt.licensing.service.trade.gov.uk.test/repository/maven-snapshots/"
     }
     maven {
       name "releases"
-      url "http://nexus.mgmt.int.licensing.service.trade.gov.uk/repository/maven-releases/"
+      url "http://nexus.mgmt.licensing.service.trade.gov.uk.test/repository/maven-releases/"
     }
   }
 }
