@@ -31,7 +31,6 @@ public class SpireResponse {
 
   private SOAPMessage message;
 
-  private static final String ERROR = "ERROR";
   private static final String XPATH_EXP_RESPONSE = "//*[local-name()='RESPONSE']";
 
   private static XPath xpath = XPathFactory.newInstance().newXPath();
@@ -61,6 +60,8 @@ public class SpireResponse {
     return getChildrenOfBodyNodes(listElementName);
   }
 
+  // TODO Why do we return null instead of empty list? Because of this,
+  // TODO spireResponse.getResponseElementContent can throw NPE if no RESPONSE element exists
   private List<Node> getResponseElementNodes() {
     List<Node> nodes = null;
     try {
@@ -81,17 +82,6 @@ public class SpireResponse {
       list(nodeList).stream().filter(Node::hasChildNodes).forEach(node -> {
         nodes.addAll(list(node.getChildNodes()));
       });
-    } catch (SOAPException | XPathExpressionException e) {
-      throw new SpireClientException("An error occurred while extracting the SOAP Response Body", e);
-    }
-    return nodes;
-  }
-
-  private List<Node> getBodyNodes(String xpathExpression) {
-    List<Node> nodes;
-    try {
-      NodeList nodeList = (NodeList) xpath.evaluate(xpathExpression, message.getSOAPBody(), XPathConstants.NODESET);
-      nodes = list(nodeList);
     } catch (SOAPException | XPathExpressionException e) {
       throw new SpireClientException("An error occurred while extracting the SOAP Response Body", e);
     }
@@ -126,10 +116,6 @@ public class SpireResponse {
 
   public SOAPMessage getMessage() {
     return message;
-  }
-
-  public void setMessage(SOAPMessage message) {
-    this.message = message;
   }
 
   private static String reduce(List<Node> nodes, String nodeName) {
