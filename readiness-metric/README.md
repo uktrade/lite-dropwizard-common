@@ -1,4 +1,4 @@
-# Readiness metric
+# Readiness Metric
 
 Provides an HttpServlet to facilitate readiness probes as used by Kubernetes for a pod lifecycle, you can find more information on the topic [here](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#define-readiness-probes)
 
