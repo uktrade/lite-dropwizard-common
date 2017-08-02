@@ -1,9 +1,7 @@
 package uk.gov.bis.lite.common.spire.client;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.anyRequestedFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.anyUrl;
-import static com.github.tomakehurst.wiremock.client.WireMock.findAll;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
@@ -11,10 +9,7 @@ import static io.dropwizard.testing.FixtureHelpers.fixture;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.github.tomakehurst.wiremock.http.Request;
-import com.github.tomakehurst.wiremock.http.RequestMethod;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import com.github.tomakehurst.wiremock.verification.LoggedRequest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -22,8 +17,6 @@ import org.junit.Test;
 import uk.gov.bis.lite.common.spire.client.exception.SpireClientException;
 import uk.gov.bis.lite.common.spire.client.parser.ReferenceParser;
 import uk.gov.bis.lite.common.spire.client.parser.SpireParser;
-
-import java.util.List;
 
 public class SpireClientTest {
 
@@ -52,6 +45,9 @@ public class SpireClientTest {
   @Test
   public void testSimpleValidRequestWithoutUsingSpirePrefix() {
     stubFor(post(urlEqualTo("/NAMESPACE"))
+        .withHeader("Authorization", equalTo("Basic dXNlcm5hbWU6cGFzc3dvcmQ="))
+        .withHeader("Content-Type", equalTo("text/xml; charset=UTF-8"))
+        .withRequestBody(equalTo(fixture("simpleRequest.xml")))
         .willReturn(aResponse()
             .withStatus(200)
             .withHeader("Content-Type", "application/soap+xml; charset=utf-8")
@@ -61,16 +57,6 @@ public class SpireClientTest {
 
     SpireRequest request = client.createRequest();
     String response = client.sendRequest(request);
-
-    // Verify request
-    List<LoggedRequest> requests = findAll(anyRequestedFor(anyUrl()));
-    assertThat(requests).hasSize(1);
-    Request loggedRequest = requests.get(0);
-    assertThat(loggedRequest.getHeader("Authorization")).isEqualTo("Basic dXNlcm5hbWU6cGFzc3dvcmQ=");
-    assertThat(loggedRequest.getHeader("Content-Type")).isEqualTo("text/xml; charset=UTF-8");
-    assertThat(loggedRequest.getAbsoluteUrl()).isEqualTo("http://localhost:8089/NAMESPACE");
-    assertThat(loggedRequest.getMethod()).isEqualTo(RequestMethod.POST);
-    assertThat(requests.get(0).getBodyAsString()).isEqualTo(fixture("simpleRequest.xml"));
 
     // Verify response
     assertThat(response).isEqualTo("TEXT");
@@ -84,6 +70,9 @@ public class SpireClientTest {
         new SpireRequestConfig("NAMESPACE", "CHILD", true));
 
     stubFor(post(urlEqualTo("/NAMESPACE"))
+        .withHeader("Authorization", equalTo("Basic dXNlcm5hbWU6cGFzc3dvcmQ="))
+        .withHeader("Content-Type", equalTo("text/xml; charset=UTF-8"))
+        .withRequestBody(equalTo(fixture("simpleRequestWithPrefix.xml")))
         .willReturn(aResponse()
             .withStatus(200)
             .withHeader("Content-Type", "application/soap+xml; charset=utf-8")
@@ -93,16 +82,6 @@ public class SpireClientTest {
 
     SpireRequest request = spireClient.createRequest();
     String response = spireClient.sendRequest(request);
-
-    // Verify request
-    List<LoggedRequest> requests = findAll(anyRequestedFor(anyUrl()));
-    assertThat(requests).hasSize(1);
-    Request loggedRequest = requests.get(0);
-    assertThat(loggedRequest.getHeader("Authorization")).isEqualTo("Basic dXNlcm5hbWU6cGFzc3dvcmQ=");
-    assertThat(loggedRequest.getHeader("Content-Type")).isEqualTo("text/xml; charset=UTF-8");
-    assertThat(loggedRequest.getAbsoluteUrl()).isEqualTo("http://localhost:8089/NAMESPACE");
-    assertThat(loggedRequest.getMethod()).isEqualTo(RequestMethod.POST);
-    assertThat(requests.get(0).getBodyAsString()).isEqualTo(fixture("simpleRequestWithPrefix.xml"));
 
     // Verify response
     assertThat(response).isEqualTo("TEXT");

@@ -1,5 +1,5 @@
 group 'uk.gov.bis.lite'
-version '1.3'
+version '1.4'
 
 apply plugin: 'java'
 apply plugin: 'maven-publish'

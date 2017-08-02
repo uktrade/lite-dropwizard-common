@@ -56,19 +56,17 @@ public class SpireResponse {
     return getChildrenOfBodyNodes(listElementName);
   }
 
-  // TODO Why do we return null instead of empty list? Because of this,
-  // TODO spireResponse.getResponseElementContent can throw NPE if no RESPONSE element exists
   private List<Node> getResponseElementNodes() {
-    List<Node> nodes = null;
     try {
       NodeList nodeList = (NodeList) xpath.evaluate(XPATH_EXP_RESPONSE, message.getSOAPBody(), XPathConstants.NODESET);
       if (nodeList != null && nodeList.item(0) != null) {
-        nodes = list(nodeList.item(0).getChildNodes());
+        return list(nodeList.item(0).getChildNodes());
+      } else {
+        return new ArrayList<>();
       }
     } catch (SOAPException | XPathExpressionException e) {
       throw new SpireClientException("An error occurred while extracting the SOAP Response Body", e);
     }
-    return nodes;
   }
 
   private List<Node> getChildrenOfBodyNodes(String xpathExpression) {
