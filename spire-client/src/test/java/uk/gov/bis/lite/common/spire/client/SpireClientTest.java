@@ -1,9 +1,11 @@
 package uk.gov.bis.lite.common.spire.client;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static io.dropwizard.testing.FixtureHelpers.fixture;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -41,21 +43,52 @@ public class SpireClientTest {
   }
 
   @Test
-  public void testSimpleValidRequest() throws Exception {
+  public void testSimpleValidRequestWithoutUsingSpirePrefix() {
     stubFor(post(urlEqualTo("/NAMESPACE"))
+        .withHeader("Authorization", equalTo("Basic dXNlcm5hbWU6cGFzc3dvcmQ="))
+        .withHeader("Content-Type", equalTo("text/xml; charset=UTF-8"))
+        .withRequestBody(equalTo(fixture("simpleRequest.xml")))
         .willReturn(aResponse()
             .withStatus(200)
             .withHeader("Content-Type", "application/soap+xml; charset=utf-8")
             .withBodyFile("simple.xml")
         )
     );
+
     SpireRequest request = client.createRequest();
     String response = client.sendRequest(request);
+
+    // Verify response
     assertThat(response).isEqualTo("TEXT");
   }
 
   @Test
-  public void testEmptyResponseShouldThrowKnownException() throws Exception {
+  public void testSimpleValidRequestUsingSpirePrefix() {
+    SpireClient<String> spireClient = new SpireClient<>(
+        new ReferenceParser("ELEMENT"),
+        new SpireClientConfig("username", "password", "http://localhost:8089/"),
+        new SpireRequestConfig("NAMESPACE", "CHILD", true));
+
+    stubFor(post(urlEqualTo("/NAMESPACE"))
+        .withHeader("Authorization", equalTo("Basic dXNlcm5hbWU6cGFzc3dvcmQ="))
+        .withHeader("Content-Type", equalTo("text/xml; charset=UTF-8"))
+        .withRequestBody(equalTo(fixture("simpleRequestWithPrefix.xml")))
+        .willReturn(aResponse()
+            .withStatus(200)
+            .withHeader("Content-Type", "application/soap+xml; charset=utf-8")
+            .withBodyFile("simple.xml")
+        )
+    );
+
+    SpireRequest request = spireClient.createRequest();
+    String response = spireClient.sendRequest(request);
+
+    // Verify response
+    assertThat(response).isEqualTo("TEXT");
+  }
+
+  @Test
+  public void testEmptyResponseShouldThrowKnownException() {
     stubFor(post(urlEqualTo("/NAMESPACE"))
         .willReturn(aResponse()
             .withStatus(500))
@@ -67,7 +100,7 @@ public class SpireClientTest {
   }
 
   @Test
-  public void testUrlMissingTrailingSlash() throws Exception {
+  public void testUrlMissingTrailingSlash() {
     SpireParser<String> parser = new ReferenceParser("ELEMENT");
     // Note, url missing trailing slash
     SpireClientConfig clientConfig = new SpireClientConfig("username", "password", "http://localhost:8089/some-path");

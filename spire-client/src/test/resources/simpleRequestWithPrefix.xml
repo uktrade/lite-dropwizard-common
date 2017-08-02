@@ -1,0 +1,1 @@
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:spir="http://www.fivium.co.uk/fox/webservices/ispire/NAMESPACE"><SOAP-ENV:Header/><SOAP-ENV:Body><spir:CHILD/></SOAP-ENV:Body></SOAP-ENV:Envelope>

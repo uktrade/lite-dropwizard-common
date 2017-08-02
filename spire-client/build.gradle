@@ -1,5 +1,5 @@
 group 'uk.gov.bis.lite'
-version '1.3'
+version '1.4'
 
 apply plugin: 'java'
 apply plugin: 'maven-publish'
@@ -22,12 +22,11 @@ repositories {
 dependencies {
   compileOnly 'io.dropwizard:dropwizard-core:1.0.3'
 
-  testCompile 'org.slf4j:slf4j-api:1.7.21'
-  testCompile 'org.slf4j:slf4j-jdk14:1.7.21'
   testCompile group: 'junit', name: 'junit', version: '4.11'
   testCompile 'org.assertj:assertj-core:3.4.1'
   testCompile 'com.google.guava:guava-testlib:19.0'
   testCompile 'com.github.tomakehurst:wiremock:2.6.0'
+  testCompile 'io.dropwizard:dropwizard-testing:1.0.3'
 }
 
 publishing {

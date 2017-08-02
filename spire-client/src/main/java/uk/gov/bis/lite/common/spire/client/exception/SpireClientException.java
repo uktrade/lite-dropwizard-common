@@ -1,11 +1,9 @@
 package uk.gov.bis.lite.common.spire.client.exception;
 
-import io.dropwizard.jersey.errors.ErrorMessage;
-
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ExceptionMapper;
 
-public class SpireClientException extends RuntimeException {
+public class SpireClientException extends WebApplicationException {
 
   /**
    * SpireClientException
@@ -13,27 +11,17 @@ public class SpireClientException extends RuntimeException {
    * @param info information on exception
    */
   public SpireClientException(String info) {
-    super("Spire Client Exception: " + info);
+    super("Spire Client Exception: " + info, Response.Status.BAD_REQUEST);
   }
 
   /**
    * SpireClientException
    *
-   * @param info information on exception
+   * @param info  information on exception
    * @param cause the cause
    */
   public SpireClientException(String info, Throwable cause) {
-    super("Spire Client Exception: " + info, cause);
+    super("Spire Client Exception: " + info, cause, Response.Status.BAD_REQUEST);
   }
 
-  /**
-   * Provided for Dropwizard/Jersey integration
-   */
-  public static class ServiceExceptionMapper implements ExceptionMapper<SpireClientException> {
-
-    @Override
-    public Response toResponse(SpireClientException exception) {
-      return Response.status(400).entity(new ErrorMessage(400, exception.getMessage())).build();
-    }
-  }
 }
