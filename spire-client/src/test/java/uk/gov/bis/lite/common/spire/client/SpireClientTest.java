@@ -10,9 +10,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import uk.gov.bis.lite.common.spire.client.exception.SpireClientException;
 import uk.gov.bis.lite.common.spire.client.parser.ReferenceParser;
@@ -22,8 +22,8 @@ public class SpireClientTest {
 
   private SpireClient<String> client;
 
-  @Rule
-  public WireMockRule wireMockRule = new WireMockRule(8089);
+  @ClassRule
+  public static WireMockRule wireMockRule = new WireMockRule(8089);
 
   public SpireClientTest() {
     SpireParser<String> parser = new ReferenceParser("ELEMENT");
@@ -32,13 +32,13 @@ public class SpireClientTest {
     client = new SpireClient<>(parser, clientConfig, requestConfig);
   }
 
-  @Before
-  public void setUp() throws Exception {
+  @BeforeClass
+  public static void before() throws Exception {
     wireMockRule.start();
   }
 
-  @After
-  public void tearDown() throws Exception {
+  @AfterClass
+  public static void after() throws Exception {
     wireMockRule.stop();
   }
 
