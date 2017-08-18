@@ -16,6 +16,8 @@ Add configuration to your Dropwizard application:
 spireClientUserName: username
 spireClientPassword: password
 spireClientUrl: https://www.spiretest.trade.gov.uk/spireuat/fox/ispire/
+spireConnectTimeoutMillis: 20000 # Optional
+spireReadTimeoutMillis: 60000 # Optional
 ```
 
 Register SpireClientException in Dropwizard setup environment
