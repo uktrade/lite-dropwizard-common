@@ -63,7 +63,7 @@ node('jdk8') {
     }
 
     stage("Archive results") {
-      step([$class: 'JUnitResultArchiver', testResults: '*/build/test-results//*.xml'])
+      step([$class: 'JUnitResultArchiver', testResults: '*/build/test-results/**/*.xml'])
 
       if (testFailure) {
         error("Test failures found, see the test reports for more details")
