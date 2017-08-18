@@ -10,6 +10,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.sun.xml.internal.messaging.saaj.SOAPExceptionImpl;
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -17,6 +19,9 @@ import org.junit.Test;
 import uk.gov.bis.lite.common.spire.client.exception.SpireClientException;
 import uk.gov.bis.lite.common.spire.client.parser.ReferenceParser;
 import uk.gov.bis.lite.common.spire.client.parser.SpireParser;
+
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 
 public class SpireClientTest {
 
@@ -35,6 +40,11 @@ public class SpireClientTest {
   @BeforeClass
   public static void before() throws Exception {
     wireMockRule.start();
+  }
+
+  @After
+  public void tearDown() throws Exception {
+    wireMockRule.resetAll();
   }
 
   @AfterClass
@@ -116,5 +126,32 @@ public class SpireClientTest {
     SpireRequest request = client.createRequest();
     String response = client.sendRequest(request);
     assertThat(response).isEqualTo("TEXT");
+  }
+
+  @Test
+  public void testReadTimeoutShouldThrowKnownException() {
+    SpireParser<String> parser = new ReferenceParser("ELEMENT");
+    int connectTimeoutMillis = 200;
+    int readTimeoutMillis = 1000;
+    SpireClientConfig clientConfig = new SpireClientConfig("username", "password", "http://localhost:8089/some-path", connectTimeoutMillis, readTimeoutMillis);
+    SpireRequestConfig requestConfig = new SpireRequestConfig("NAMESPACE", "CHILD", false);
+    SpireClient<String> client = new SpireClient<>(parser, clientConfig, requestConfig);
+    stubFor(post(urlEqualTo("/some-path/NAMESPACE"))
+        .willReturn(aResponse()
+            .withStatus(200)
+            .withFixedDelay(70000)
+            .withHeader("Content-Type", "application/soap+xml; charset=utf-8")
+            .withBodyFile("simple.xml")
+        )
+    );
+
+    SpireRequest request = client.createRequest();
+
+    Instant before = Instant.now();
+    assertThatThrownBy(() -> client.sendRequest(request)).hasCauseInstanceOf(SOAPExceptionImpl.class);
+    Instant after = Instant.now();
+
+    // 10000ms is less that the SpireClientConfig default of 60000ms
+    assertThat(ChronoUnit.MILLIS.between(before, after)).isBetween(1000L, 10000L);
   }
 }
