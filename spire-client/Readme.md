@@ -20,12 +20,6 @@ spireClientConnectTimeoutMillis: 20000 # Optional
 spireClientReadTimeoutMillis: 60000 # Optional
 ```
 
-Register SpireClientException in Dropwizard setup environment
-
-```java
-environment.jersey().register(SpireClientException.ServiceExceptionMapper.class);
-```
-
 SpireReferenceClient - create a SpireClient A client requires a client specific
 parser and also needs request and spire configuration data:
 
