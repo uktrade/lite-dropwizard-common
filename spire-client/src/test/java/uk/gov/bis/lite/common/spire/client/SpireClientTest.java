@@ -10,7 +10,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import com.sun.xml.internal.messaging.saaj.SOAPExceptionImpl;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -20,8 +19,7 @@ import uk.gov.bis.lite.common.spire.client.exception.SpireClientException;
 import uk.gov.bis.lite.common.spire.client.parser.ReferenceParser;
 import uk.gov.bis.lite.common.spire.client.parser.SpireParser;
 
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
+import javax.xml.soap.SOAPException;
 
 public class SpireClientTest {
 
@@ -139,19 +137,13 @@ public class SpireClientTest {
     stubFor(post(urlEqualTo("/some-path/NAMESPACE"))
         .willReturn(aResponse()
             .withStatus(200)
-            .withFixedDelay(70000)
+            .withFixedDelay(10000)
             .withHeader("Content-Type", "application/soap+xml; charset=utf-8")
             .withBodyFile("simple.xml")
         )
     );
 
     SpireRequest request = client.createRequest();
-
-    Instant before = Instant.now();
-    assertThatThrownBy(() -> client.sendRequest(request)).hasCauseInstanceOf(SOAPExceptionImpl.class);
-    Instant after = Instant.now();
-
-    // 10000ms is less that the SpireClientConfig default of 60000ms
-    assertThat(ChronoUnit.MILLIS.between(before, after)).isBetween(1000L, 10000L);
+      assertThatThrownBy(() -> client.sendRequest(request)).hasCauseInstanceOf(SOAPException.class);
   }
 }
