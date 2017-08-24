@@ -1,17 +1,18 @@
 package uk.gov.bis.lite.common.spire.client;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.configureFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static io.dropwizard.testing.FixtureHelpers.fixture;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -26,28 +27,27 @@ public class SpireClientTest {
   private SpireClient<String> client;
 
   @ClassRule
-  public static WireMockRule wireMockRule = new WireMockRule(8089);
+  public static WireMockClassRule wireMockClassRule = new WireMockClassRule(options().dynamicPort());
 
   public SpireClientTest() {
     SpireParser<String> parser = new ReferenceParser("ELEMENT");
-    SpireClientConfig clientConfig = new SpireClientConfig("username", "password", "http://localhost:8089/");
+    SpireClientConfig clientConfig = new SpireClientConfig("username", "password", getSpireBaseUrl());
     SpireRequestConfig requestConfig = new SpireRequestConfig("NAMESPACE", "CHILD", false);
     client = new SpireClient<>(parser, clientConfig, requestConfig);
   }
 
   @BeforeClass
   public static void before() throws Exception {
-    wireMockRule.start();
+    configureFor(wireMockClassRule.port());
   }
 
   @After
   public void tearDown() throws Exception {
-    wireMockRule.resetAll();
+    wireMockClassRule.resetAll();
   }
 
-  @AfterClass
-  public static void after() throws Exception {
-    wireMockRule.stop();
+  private String getSpireBaseUrl() {
+    return "http://localhost:" + wireMockClassRule.port() + "/";
   }
 
   @Test
@@ -74,7 +74,7 @@ public class SpireClientTest {
   public void testSimpleValidRequestUsingSpirePrefix() {
     SpireClient<String> spireClient = new SpireClient<>(
         new ReferenceParser("ELEMENT"),
-        new SpireClientConfig("username", "password", "http://localhost:8089/"),
+        new SpireClientConfig("username", "password", getSpireBaseUrl()),
         new SpireRequestConfig("NAMESPACE", "CHILD", true));
 
     stubFor(post(urlEqualTo("/NAMESPACE"))
@@ -111,7 +111,7 @@ public class SpireClientTest {
   public void testUrlMissingTrailingSlash() {
     SpireParser<String> parser = new ReferenceParser("ELEMENT");
     // Note, url missing trailing slash
-    SpireClientConfig clientConfig = new SpireClientConfig("username", "password", "http://localhost:8089/some-path");
+    SpireClientConfig clientConfig = new SpireClientConfig("username", "password", getSpireBaseUrl() + "some-path");
     SpireRequestConfig requestConfig = new SpireRequestConfig("NAMESPACE", "CHILD", false);
     SpireClient<String> client = new SpireClient<>(parser, clientConfig, requestConfig);
     stubFor(post(urlEqualTo("/some-path/NAMESPACE"))
@@ -131,7 +131,7 @@ public class SpireClientTest {
     SpireParser<String> parser = new ReferenceParser("ELEMENT");
     int connectTimeoutMillis = 200;
     int readTimeoutMillis = 1000;
-    SpireClientConfig clientConfig = new SpireClientConfig("username", "password", "http://localhost:8089/some-path", connectTimeoutMillis, readTimeoutMillis);
+    SpireClientConfig clientConfig = new SpireClientConfig("username", "password", getSpireBaseUrl() + "some-path", connectTimeoutMillis, readTimeoutMillis);
     SpireRequestConfig requestConfig = new SpireRequestConfig("NAMESPACE", "CHILD", false);
     SpireClient<String> client = new SpireClient<>(parser, clientConfig, requestConfig);
     stubFor(post(urlEqualTo("/some-path/NAMESPACE"))
