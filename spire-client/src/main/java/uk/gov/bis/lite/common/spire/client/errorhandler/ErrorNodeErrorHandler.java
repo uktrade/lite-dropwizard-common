@@ -33,10 +33,26 @@ import javax.xml.xpath.XPathFactory;
  */
 public abstract class ErrorNodeErrorHandler implements ErrorHandler {
 
+  private static final String DEFAULT_ERROR = "ERROR";
+  private static final String DEFAULT_XPATH_EXP_RESPONSE = "//*[local-name()='RESPONSE']";
   private static final Logger LOGGER = LoggerFactory.getLogger(ErrorNodeErrorHandler.class);
-  private static final String ERROR = "ERROR";
-  private static final String XPATH_EXP_RESPONSE = "//*[local-name()='RESPONSE']";
-  private static final XPath xpath = XPathFactory.newInstance().newXPath();
+  private static final XPath XPATH = XPathFactory.newInstance().newXPath();
+
+  private final String errorNodeName;
+  private final String responseNodeXpath;
+
+  public ErrorNodeErrorHandler(String responseNodesXpath, String errorNodeName) {
+    this.errorNodeName = errorNodeName;
+    this.responseNodeXpath = responseNodesXpath;
+  }
+
+  public ErrorNodeErrorHandler(String responseNodesXpath) {
+    this(responseNodesXpath, DEFAULT_ERROR);
+  }
+
+  public ErrorNodeErrorHandler() {
+    this(DEFAULT_XPATH_EXP_RESPONSE, DEFAULT_ERROR);
+  }
 
   public abstract void handleError(String errorText);
 
@@ -57,12 +73,12 @@ public abstract class ErrorNodeErrorHandler implements ErrorHandler {
    */
   private Optional<String> getErrorTextContent(SOAPMessage message) {
     try {
-      NodeList responseNodes = (NodeList) xpath.evaluate(XPATH_EXP_RESPONSE, message.getSOAPBody(), XPathConstants.NODESET);
+      NodeList responseNodes = (NodeList) XPATH.evaluate(responseNodeXpath, message.getSOAPBody(), XPathConstants.NODESET);
       if (responseNodes != null) {
         Node first = responseNodes.item(0);
         if (first != null) {
           NodeList nodes = first.getChildNodes();
-          Node errorNode = (Node) XPathFactory.newInstance().newXPath().evaluate(ERROR, nodes, XPathConstants.NODE);
+          Node errorNode = (Node) XPathFactory.newInstance().newXPath().evaluate(errorNodeName, nodes, XPathConstants.NODE);
           if (errorNode != null) {
             return Optional.of(errorNode.getTextContent());
           }
