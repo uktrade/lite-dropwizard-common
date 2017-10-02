@@ -12,8 +12,6 @@ import uk.gov.bis.lite.common.spire.client.parser.SpireParser;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Base64;
 
 import javax.xml.soap.MessageFactory;
@@ -48,8 +46,6 @@ public class SpireClient<T> {
   private final String url;
   private final ErrorHandler errorHandler;
   private final boolean failOnSoapFault;
-  private final int connectTimeoutMillis;
-  private final int readTimeoutMillis;
 
   /**
    * SpireClient
@@ -71,8 +67,6 @@ public class SpireClient<T> {
     this.useSpirePrefix = requestConfig.isUseSpirePrefix();
     this.errorHandler = errorHandler;
     this.failOnSoapFault = failOnSoapFault;
-    this.connectTimeoutMillis = clientConfig.getConnectTimeoutMillis();
-    this.readTimeoutMillis = clientConfig.getReadTimeoutMillis();
   }
 
   /**
@@ -175,8 +169,8 @@ public class SpireClient<T> {
     SOAPConnection conn = null;
     try {
       conn = SOAPConnectionFactory.newInstance().createConnection();
-      return conn.call(request.getSoapMessage(), buildURL(url));
-    } catch (SOAPException | MalformedURLException e) {
+      return conn.call(request.getSoapMessage(), url);
+    } catch (SOAPException e) {
       throw new SpireClientException("Error occurred establishing connection with SOAP client", e);
     } finally {
       if (conn != null) {
@@ -230,9 +224,5 @@ public class SpireClient<T> {
     else {
       return url + '/' + urlSuffix;
     }
-  }
-
-  private URL buildURL(String url) throws MalformedURLException {
-    return new URL(null, url, new SpireURLStreamHandler(connectTimeoutMillis, readTimeoutMillis));
   }
 }
