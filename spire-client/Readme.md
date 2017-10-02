@@ -7,7 +7,7 @@ Provides utility framework for accessing Spire data.
 Add the dependency to your project:
 
 ```gradle
-compile 'uk.gov.bis.lite:spire-client:1.5'
+compile 'uk.gov.bis.lite:spire-client:1.6'
 ```
 
 Add configuration to your Dropwizard application:
