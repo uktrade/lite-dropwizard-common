@@ -27,8 +27,6 @@ public class SpireResponse {
 
   private static final String XPATH_EXP_RESPONSE = "//*[local-name()='RESPONSE']";
 
-  private static final XPath xpath = XPathFactory.newInstance().newXPath();
-
   private final SOAPMessage message;
 
   public SpireResponse(SOAPMessage message) {
@@ -57,6 +55,7 @@ public class SpireResponse {
   }
 
   private List<Node> getResponseElementNodes() {
+    XPath xpath = XPathFactory.newInstance().newXPath();
     try {
       NodeList nodeList = (NodeList) xpath.evaluate(XPATH_EXP_RESPONSE, message.getSOAPBody(), XPathConstants.NODESET);
       if (nodeList != null && nodeList.item(0) != null) {
@@ -70,6 +69,7 @@ public class SpireResponse {
   }
 
   private List<Node> getChildrenOfBodyNodes(String xpathExpression) {
+    XPath xpath = XPathFactory.newInstance().newXPath();
     List<Node> nodes = new ArrayList<>();
     try {
       NodeList nodeList = (NodeList) xpath.evaluate(xpathExpression, message.getSOAPBody(), XPathConstants.NODESET);
@@ -83,6 +83,7 @@ public class SpireResponse {
   }
 
   public static Optional<String> getNodeValue(Node singleNode, String name) {
+    XPath xpath = XPathFactory.newInstance().newXPath();
     try {
       Node node = (Node) xpath.evaluate(name, singleNode, XPathConstants.NODE);
       if (node != null) {
@@ -96,8 +97,8 @@ public class SpireResponse {
 
   public static List<Node> getChildrenOfChildNode(Node parent, String childName) {
     List<Node> nodes = new ArrayList<>();
+    XPath xpath = XPathFactory.newInstance().newXPath();
     try {
-      XPath xpath = XPathFactory.newInstance().newXPath();
       Node child = (Node) xpath.evaluate(childName, parent, XPathConstants.NODE);
       if (child != null) {
         nodes = list(child.getChildNodes());

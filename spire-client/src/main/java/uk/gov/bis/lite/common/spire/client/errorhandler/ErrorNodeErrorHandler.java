@@ -33,10 +33,10 @@ import javax.xml.xpath.XPathFactory;
  */
 public abstract class ErrorNodeErrorHandler implements ErrorHandler {
 
-  private static final String DEFAULT_ERROR = "ERROR";
-  private static final String DEFAULT_XPATH_EXP_RESPONSE = "//*[local-name()='RESPONSE']";
+  public static final String DEFAULT_ERROR = "ERROR";
+  public static final String DEFAULT_XPATH_EXP_RESPONSE = "//*[local-name()='RESPONSE']";
+
   private static final Logger LOGGER = LoggerFactory.getLogger(ErrorNodeErrorHandler.class);
-  private static final XPath XPATH = XPathFactory.newInstance().newXPath();
 
   private final String errorNodeName;
   private final String responseNodeXpath;
@@ -72,8 +72,9 @@ public abstract class ErrorNodeErrorHandler implements ErrorHandler {
    * Looks for an ERROR node, and returns any textual content of found
    */
   private Optional<String> getErrorTextContent(SOAPMessage message) {
+    XPath xpath = XPathFactory.newInstance().newXPath();
     try {
-      NodeList responseNodes = (NodeList) XPATH.evaluate(responseNodeXpath, message.getSOAPBody(), XPathConstants.NODESET);
+      NodeList responseNodes = (NodeList) xpath.evaluate(responseNodeXpath, message.getSOAPBody(), XPathConstants.NODESET);
       if (responseNodes != null) {
         Node first = responseNodes.item(0);
         if (first != null) {
