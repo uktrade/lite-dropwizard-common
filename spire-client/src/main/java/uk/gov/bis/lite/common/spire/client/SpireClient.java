@@ -1,6 +1,7 @@
 package uk.gov.bis.lite.common.spire.client;
 
 
+import com.google.common.base.Stopwatch;
 import com.google.common.base.Throwables;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +14,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Base64;
+import java.util.concurrent.TimeUnit;
 
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.MimeHeaders;
@@ -131,9 +133,12 @@ public class SpireClient<T> {
 
   private SpireResponse getSpireResponse(SpireRequest request, String urlSuffix) {
     String requestUrl = createRequestUrl(url, urlSuffix);
-    logSoapMessage("request", request.getSoapMessage(), requestUrl);
+    logSoapMessage("request", request.getSoapMessage(), requestUrl, null);
+    Stopwatch stopwatch = Stopwatch.createStarted();
     SOAPMessage response = doExecuteRequest(request, requestUrl);
-    logSoapMessage("response", response, requestUrl);
+    stopwatch.stop();
+    logSoapMessage("response", response, requestUrl, stopwatch.elapsed(TimeUnit.MILLISECONDS));
+
     if (response == null) {
       throw new SpireClientException("Empty response from SOAP client");
     }
@@ -200,8 +205,9 @@ public class SpireClient<T> {
    * @param type the type of SOAP message
    * @param message the message
    * @param url the originating url of {@code message}
+   * @param elapsedTimeMs the elapsed time taken in milliseconds
    */
-  private void logSoapMessage(String type, SOAPMessage message, String url) {
+  private void logSoapMessage(String type, SOAPMessage message, String url, Long elapsedTimeMs) {
     if (LOGGER.isInfoEnabled()) {
       try {
         String serialisedMessage = "";
@@ -210,7 +216,11 @@ public class SpireClient<T> {
           message.writeTo(out);
           serialisedMessage = out.toString();
         }
-        LOGGER.info("SOAP {} - url: {}, message:\n{}", type, url, serialisedMessage);
+        if (elapsedTimeMs == null) {
+          LOGGER.info("SOAP {} - url: {}, message:\n{}", type, url, serialisedMessage);
+        } else {
+          LOGGER.info("SOAP {} - url: {}, time: {}ms, message:\n{}", type, url, elapsedTimeMs, serialisedMessage);
+        }
       } catch (IOException | SOAPException e) {
         LOGGER.error("error", e);
       }
