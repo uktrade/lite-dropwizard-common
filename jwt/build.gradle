@@ -1,0 +1,65 @@
+group 'uk.gov.bis.lite'
+version '1.0'
+
+apply plugin: 'java'
+apply plugin: 'maven-publish'
+
+apply plugin: 'idea'
+idea {
+    module {
+        inheritOutputDirs = false
+        outputDir = file('build/classes/main')
+        testOutputDir = file('build/classes/test')
+    }
+}
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'com.github.toastshaman:dropwizard-auth-jwt:1.1.2-0'
+
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+
+publishing {
+    publications {
+
+        mavenJava(MavenPublication) {
+            from components.java
+
+            artifact sourceJar {
+                classifier "sources"
+            }
+
+            artifact javadocJar {
+                classifier "javadoc"
+            }
+        }
+    }
+}
+
+task javadocJar(type: Jar) {
+    from javadoc
+}
+
+task sourceJar(type: Jar) {
+    from sourceSets.main.allJava
+}
+
+publishing {
+    repositories {
+        maven {
+            name "snapshots"
+            url "http://nexus.mgmt.licensing.service.trade.gov.uk.test/repository/maven-snapshots/"
+        }
+        maven {
+            name "releases"
+            url "http://nexus.mgmt.licensing.service.trade.gov.uk.test/repository/maven-releases/"
+        }
+    }
+}
