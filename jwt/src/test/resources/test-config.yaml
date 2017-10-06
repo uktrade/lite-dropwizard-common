@@ -1,0 +1,10 @@
+jwtSharedSecret: demo-secret-which-is-very-long-so-as-to-hit-the-byte-requirement
+
+server:
+  type: default
+  applicationConnectors:
+    - type: http
+      port: 8080
+  adminConnectors:
+    - type: http
+      port: 8081
