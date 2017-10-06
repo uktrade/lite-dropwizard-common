@@ -45,9 +45,7 @@ public class LiteJwtAuthFilterTest {
   @ClassRule
   public static final DropwizardAppRule<TestAppConfig> RULE = new DropwizardAppRule<>(
       TestApp.class, resourceFilePath("test-config.yaml"),
-      ConfigOverride.config("jwtSharedSecret", JWT_SHARED_SECRET),
-      ConfigOverride.config("server.applicationConnectors[0].port", "0"), // random application port
-      ConfigOverride.config("server.adminConnectors[0].port", "0")); // random admin port
+      ConfigOverride.config("jwtSharedSecret", JWT_SHARED_SECRET));
 
 
   private static String urlTarget(String targetPath) {
