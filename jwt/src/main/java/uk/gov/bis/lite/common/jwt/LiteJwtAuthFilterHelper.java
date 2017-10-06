@@ -24,7 +24,7 @@ public class LiteJwtAuthFilterHelper {
    *
    * <p>
    *  With the HTTP {@code Authorization} header prefixed with "Bearer" and {@code realm} "realm" (if provided).
-   *  <br/>
+   *  <br>
    *  See the following valid example:
    * </p>
    *
@@ -57,7 +57,7 @@ public class LiteJwtAuthFilterHelper {
    *
    * @param jwtSharedSecret the shared secret to use with the HMAC SHA-256 algorithm, minimum of 64 bytes
    *
-   * @return a new JwtAuthFilter<LiteJwtUser>, configured as described here
+   * @return a new {@link JwtAuthFilter}, configured as described here
    */
   public static JwtAuthFilter<LiteJwtUser> buildAuthFilter(String jwtSharedSecret) {
     JwtConsumer consumer = new JwtConsumerBuilder()
