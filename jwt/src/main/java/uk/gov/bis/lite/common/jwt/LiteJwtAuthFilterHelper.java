@@ -30,10 +30,10 @@ public class LiteJwtAuthFilterHelper {
    *
    * <pre>
    * Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.
-   * eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE1MDcxMjE1OD
-   * AsImV4cCI6MTUzODY1NzU4NywiYXVkIjoibGl0ZSIsInN1YiI6IjEyMzQ1
-   * NiIsImVtYWlsIjoiZXhhbXBsZUBleGFtcGxlLmNvbSJ9.wUKTzHkQoym-K
-   * CWzFUFrXeEKRQ3y3to-CBeHbqOxW4s
+   * eyJpc3MiOiJTb21lIGxpdGUgc2VydmljZSIsImlhdCI6MTUwNzU0MjM3Niw
+   * iZXhwIjoxNjAyMjM2Nzc2LCJhdWQiOiJsaXRlIiwic3ViIjoiMTIzNDU2Ii
+   * wiZW1haWwiOiJleGFtcGxlQGV4YW1wbGUuY29tIn0.
+   * wC_Jc4cOoM4UFX7UHHD3hCUcz8b9UPL_ImncY5FtAho
    * </pre>
    *
    * Decodes to:
@@ -44,9 +44,9 @@ public class LiteJwtAuthFilterHelper {
    *  "alg": "HS256"
    * }.
    * {
-   *  "iss": "Online JWT Builder",
-   *  "iat": 1507121580,
-   *  "exp": 1538657587,
+   *  "iss": "Some lite service",
+   *  "iat": 1507542376,
+   *  "exp": 1602236776,
    *  "aud": "lite",
    *  "sub": "123456",
    *  "email": "example@example.com"
