@@ -34,7 +34,7 @@ import javax.xml.xpath.XPathFactory;
 public abstract class ErrorNodeErrorHandler implements ErrorHandler {
 
   public static final String DEFAULT_ERROR = "ERROR";
-  public static final String DEFAULT_XPATH_EXP_RESPONSE = "//*[local-name()='RESPONSE']";
+  public static final String DEFAULT_RESPONSE_NODE_XPATH = "//*[local-name()='RESPONSE']";
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ErrorNodeErrorHandler.class);
 
@@ -51,7 +51,7 @@ public abstract class ErrorNodeErrorHandler implements ErrorHandler {
   }
 
   public ErrorNodeErrorHandler() {
-    this(DEFAULT_XPATH_EXP_RESPONSE, DEFAULT_ERROR);
+    this(DEFAULT_RESPONSE_NODE_XPATH, DEFAULT_ERROR);
   }
 
   public abstract void handleError(String errorText);
