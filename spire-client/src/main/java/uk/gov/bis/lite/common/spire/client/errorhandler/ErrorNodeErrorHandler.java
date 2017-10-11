@@ -33,7 +33,7 @@ import javax.xml.xpath.XPathFactory;
  */
 public abstract class ErrorNodeErrorHandler implements ErrorHandler {
 
-  public static final String DEFAULT_ERROR = "ERROR";
+  public static final String DEFAULT_ERROR_NODE_NAME = "ERROR";
   public static final String DEFAULT_RESPONSE_NODE_XPATH = "//*[local-name()='RESPONSE']";
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ErrorNodeErrorHandler.class);
@@ -47,11 +47,11 @@ public abstract class ErrorNodeErrorHandler implements ErrorHandler {
   }
 
   public ErrorNodeErrorHandler(String responseNodesXpath) {
-    this(responseNodesXpath, DEFAULT_ERROR);
+    this(responseNodesXpath, DEFAULT_ERROR_NODE_NAME);
   }
 
   public ErrorNodeErrorHandler() {
-    this(DEFAULT_RESPONSE_NODE_XPATH, DEFAULT_ERROR);
+    this(DEFAULT_RESPONSE_NODE_XPATH, DEFAULT_ERROR_NODE_NAME);
   }
 
   public abstract void handleError(String errorText);
