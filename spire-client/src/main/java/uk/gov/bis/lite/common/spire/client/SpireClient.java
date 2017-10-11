@@ -1,6 +1,7 @@
 package uk.gov.bis.lite.common.spire.client;
 
 
+import com.google.common.base.Stopwatch;
 import com.google.common.base.Throwables;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,9 +13,8 @@ import uk.gov.bis.lite.common.spire.client.parser.SpireParser;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Base64;
+import java.util.concurrent.TimeUnit;
 
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.MimeHeaders;
@@ -48,8 +48,6 @@ public class SpireClient<T> {
   private final String url;
   private final ErrorHandler errorHandler;
   private final boolean failOnSoapFault;
-  private final int connectTimeoutMillis;
-  private final int readTimeoutMillis;
 
   /**
    * SpireClient
@@ -71,8 +69,6 @@ public class SpireClient<T> {
     this.useSpirePrefix = requestConfig.isUseSpirePrefix();
     this.errorHandler = errorHandler;
     this.failOnSoapFault = failOnSoapFault;
-    this.connectTimeoutMillis = clientConfig.getConnectTimeoutMillis();
-    this.readTimeoutMillis = clientConfig.getReadTimeoutMillis();
   }
 
   /**
@@ -137,9 +133,12 @@ public class SpireClient<T> {
 
   private SpireResponse getSpireResponse(SpireRequest request, String urlSuffix) {
     String requestUrl = createRequestUrl(url, urlSuffix);
-    logSoapMessage("request", request.getSoapMessage(), requestUrl);
+    logSoapMessage("request", request.getSoapMessage(), requestUrl, null);
+    Stopwatch stopwatch = Stopwatch.createStarted();
     SOAPMessage response = doExecuteRequest(request, requestUrl);
-    logSoapMessage("response", response, requestUrl);
+    stopwatch.stop();
+    logSoapMessage("response", response, requestUrl, stopwatch.elapsed(TimeUnit.MILLISECONDS));
+
     if (response == null) {
       throw new SpireClientException("Empty response from SOAP client");
     }
@@ -175,8 +174,8 @@ public class SpireClient<T> {
     SOAPConnection conn = null;
     try {
       conn = SOAPConnectionFactory.newInstance().createConnection();
-      return conn.call(request.getSoapMessage(), buildURL(url));
-    } catch (SOAPException | MalformedURLException e) {
+      return conn.call(request.getSoapMessage(), url);
+    } catch (SOAPException e) {
       throw new SpireClientException("Error occurred establishing connection with SOAP client", e);
     } finally {
       if (conn != null) {
@@ -206,8 +205,9 @@ public class SpireClient<T> {
    * @param type the type of SOAP message
    * @param message the message
    * @param url the originating url of {@code message}
+   * @param elapsedTimeMs the elapsed time taken in milliseconds
    */
-  private void logSoapMessage(String type, SOAPMessage message, String url) {
+  private void logSoapMessage(String type, SOAPMessage message, String url, Long elapsedTimeMs) {
     if (LOGGER.isInfoEnabled()) {
       try {
         String serialisedMessage = "";
@@ -216,7 +216,11 @@ public class SpireClient<T> {
           message.writeTo(out);
           serialisedMessage = out.toString();
         }
-        LOGGER.info("SOAP {} - url: {}, message:\n{}", type, url, serialisedMessage);
+        if (elapsedTimeMs == null) {
+          LOGGER.info("SOAP {} - url: {}, message:\n{}", type, url, serialisedMessage);
+        } else {
+          LOGGER.info("SOAP {} - url: {}, time: {}ms, message:\n{}", type, url, elapsedTimeMs, serialisedMessage);
+        }
       } catch (IOException | SOAPException e) {
         LOGGER.error("error", e);
       }
@@ -230,9 +234,5 @@ public class SpireClient<T> {
     else {
       return url + '/' + urlSuffix;
     }
-  }
-
-  private URL buildURL(String url) throws MalformedURLException {
-    return new URL(null, url, new SpireURLStreamHandler(connectTimeoutMillis, readTimeoutMillis));
   }
 }

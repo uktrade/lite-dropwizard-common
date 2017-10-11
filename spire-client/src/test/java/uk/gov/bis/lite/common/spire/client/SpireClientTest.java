@@ -11,43 +11,21 @@ import static io.dropwizard.testing.FixtureHelpers.fixture;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
-import org.junit.After;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import uk.gov.bis.lite.common.spire.client.exception.SpireClientException;
 import uk.gov.bis.lite.common.spire.client.parser.ReferenceParser;
-import uk.gov.bis.lite.common.spire.client.parser.SpireParser;
-
-import javax.xml.soap.SOAPException;
 
 public class SpireClientTest {
 
-  private SpireClient<String> client;
+  @Rule
+  public WireMockRule wireMockRule = new WireMockRule(options().dynamicPort());
 
-  @ClassRule
-  public static WireMockClassRule wireMockClassRule = new WireMockClassRule(options().dynamicPort());
-
-  public SpireClientTest() {
-    SpireParser<String> parser = new ReferenceParser("ELEMENT");
-    SpireClientConfig clientConfig = new SpireClientConfig("username", "password", getSpireBaseUrl());
-    SpireRequestConfig requestConfig = new SpireRequestConfig("NAMESPACE", "CHILD", false);
-    client = new SpireClient<>(parser, clientConfig, requestConfig);
-  }
-
-  @BeforeClass
-  public static void before() throws Exception {
-    configureFor(wireMockClassRule.port());
-  }
-
-  @After
-  public void tearDown() throws Exception {
-    wireMockClassRule.resetAll();
-  }
-
-  private String getSpireBaseUrl() {
-    return "http://localhost:" + wireMockClassRule.port() + "/";
+  @Before
+  public void before() throws Exception {
+    configureFor(wireMockRule.port());
   }
 
   @Test
@@ -63,6 +41,12 @@ public class SpireClientTest {
         )
     );
 
+    String spireUrl = "http://localhost:" + wireMockRule.port() + "/";
+    SpireClient<String> client =  new SpireClient<>(
+        new ReferenceParser("ELEMENT"),
+        new SpireClientConfig("username", "password", spireUrl),
+        new SpireRequestConfig("NAMESPACE", "CHILD", false));
+
     SpireRequest request = client.createRequest();
     String response = client.sendRequest(request);
 
@@ -72,11 +56,6 @@ public class SpireClientTest {
 
   @Test
   public void testSimpleValidRequestUsingSpirePrefix() {
-    SpireClient<String> spireClient = new SpireClient<>(
-        new ReferenceParser("ELEMENT"),
-        new SpireClientConfig("username", "password", getSpireBaseUrl()),
-        new SpireRequestConfig("NAMESPACE", "CHILD", true));
-
     stubFor(post(urlEqualTo("/NAMESPACE"))
         .withHeader("Authorization", equalTo("Basic dXNlcm5hbWU6cGFzc3dvcmQ="))
         .withHeader("Content-Type", equalTo("text/xml; charset=UTF-8"))
@@ -88,8 +67,14 @@ public class SpireClientTest {
         )
     );
 
-    SpireRequest request = spireClient.createRequest();
-    String response = spireClient.sendRequest(request);
+    String spireUrl = "http://localhost:" + wireMockRule.port() + "/";
+    SpireClient<String> client =  new SpireClient<>(
+        new ReferenceParser("ELEMENT"),
+        new SpireClientConfig("username", "password", spireUrl),
+        new SpireRequestConfig("NAMESPACE", "CHILD", true));
+
+    SpireRequest request = client.createRequest();
+    String response = client.sendRequest(request);
 
     // Verify response
     assertThat(response).isEqualTo("TEXT");
@@ -101,6 +86,13 @@ public class SpireClientTest {
         .willReturn(aResponse()
             .withStatus(500))
     );
+
+    String spireUrl = "http://localhost:" + wireMockRule.port() + "/";
+    SpireClient<String> client =  new SpireClient<>(
+        new ReferenceParser("ELEMENT"),
+        new SpireClientConfig("username", "password", spireUrl),
+        new SpireRequestConfig("NAMESPACE", "CHILD", false));
+
     SpireRequest request = client.createRequest();
     assertThatThrownBy(() -> client.sendRequest(request))
         .isExactlyInstanceOf(SpireClientException.class)
@@ -109,11 +101,6 @@ public class SpireClientTest {
 
   @Test
   public void testUrlMissingTrailingSlash() {
-    SpireParser<String> parser = new ReferenceParser("ELEMENT");
-    // Note, url missing trailing slash
-    SpireClientConfig clientConfig = new SpireClientConfig("username", "password", getSpireBaseUrl() + "some-path");
-    SpireRequestConfig requestConfig = new SpireRequestConfig("NAMESPACE", "CHILD", false);
-    SpireClient<String> client = new SpireClient<>(parser, clientConfig, requestConfig);
     stubFor(post(urlEqualTo("/some-path/NAMESPACE"))
         .willReturn(aResponse()
             .withStatus(200)
@@ -121,29 +108,16 @@ public class SpireClientTest {
             .withBodyFile("simple.xml")
         )
     );
+
+    // Note, url missing trailing slash
+    String spireUrl = "http://localhost:" + wireMockRule.port() + "/some-path";
+    SpireClient<String> client =  new SpireClient<>(
+        new ReferenceParser("ELEMENT"),
+        new SpireClientConfig("username", "password", spireUrl),
+        new SpireRequestConfig("NAMESPACE", "CHILD", false));
+
     SpireRequest request = client.createRequest();
     String response = client.sendRequest(request);
     assertThat(response).isEqualTo("TEXT");
-  }
-
-  @Test
-  public void testReadTimeoutShouldThrowKnownException() {
-    SpireParser<String> parser = new ReferenceParser("ELEMENT");
-    int connectTimeoutMillis = 200;
-    int readTimeoutMillis = 1000;
-    SpireClientConfig clientConfig = new SpireClientConfig("username", "password", getSpireBaseUrl() + "some-path", connectTimeoutMillis, readTimeoutMillis);
-    SpireRequestConfig requestConfig = new SpireRequestConfig("NAMESPACE", "CHILD", false);
-    SpireClient<String> client = new SpireClient<>(parser, clientConfig, requestConfig);
-    stubFor(post(urlEqualTo("/some-path/NAMESPACE"))
-        .willReturn(aResponse()
-            .withStatus(200)
-            .withFixedDelay(10000)
-            .withHeader("Content-Type", "application/soap+xml; charset=utf-8")
-            .withBodyFile("simple.xml")
-        )
-    );
-
-    SpireRequest request = client.createRequest();
-      assertThatThrownBy(() -> client.sendRequest(request)).hasCauseInstanceOf(SOAPException.class);
   }
 }
