@@ -66,7 +66,6 @@ public class LiteJwtAuthFilterHelper {
         .setRequireSubject()
         .setVerificationKey(new HmacKey(jwtSharedSecret.getBytes()))
         .setJwsAlgorithmConstraints(new AlgorithmConstraints(AlgorithmConstraints.ConstraintType.WHITELIST, AlgorithmIdentifiers.HMAC_SHA256))
-        .setExpectedAudience("lite")
         .build();
 
     return new JwtAuthFilter.Builder<LiteJwtUser>()
