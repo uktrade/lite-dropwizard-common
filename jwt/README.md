@@ -1,4 +1,4 @@
-# Jwt
+# JWT
 
 Defines helpers objects and methods for consuming a JWT ([Json Web Token](https://jwt.io/)) to a specification common to 
 all lite services. 
@@ -16,7 +16,7 @@ public class MyApplication extends Application<Configuration> {
   public void run(Configuration configuration, Environment environment) throws Exception {
     ...
     
-    String jwtSharedSecret = "demo-secret-which-is-very-long-so-as-to-hit-the-byte-requirement";
+    String jwtSharedSecret = configuration.getJwtSharedSecret(); // demo-secret-which-is-very-long-so-as-to-hit-the-byte-requirement 
     
     JwtAuthFilter<LiteJwtUser> liteJwtUserJwtAuthFilter = LiteJwtAuthFilterHelper.buildAuthFilter(jwtSharedSecret);
     
@@ -47,11 +47,11 @@ public class MyResource {
 
 ```
 
-## LITE Jwt spec
+## LITE JWT spec
 Consumers of this library expect that any provided JWT will conform to the following spec. Any deviation from this spec 
 (excluding optional and user defined claims) will return a `401 Unauthorized` response from endpoints making used of this library.
 
-### Jwt header
+### JWT header
 * `typ` (type) "JWT"
 * `alg` (algorithm) "HS256"
 
@@ -64,7 +64,7 @@ Consumers of this library expect that any provided JWT will conform to the follo
 
 This header states that the payload is a JWT and the signature is derived using the HMAC SHA-256 algorithm.
 
-### Jwt payload
+### JWT payload
 * `sub` (subject) required and maps to the `userId` field of `LiteJwtUser`
 * `email` (custom email claim) not required, but will map to the `email` field of `LiteJwtUser`
 * `aud` (audience) required with value of "lite"
