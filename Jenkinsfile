@@ -62,6 +62,18 @@ node('jdk8') {
       }
     }
 
+    stage("Gradle test: jwt") {
+      dir("jwt") {
+        sh 'chmod 777 gradlew'
+        try {
+          sh "./gradlew test"
+        }
+        catch (e) {
+          testFailure = true
+        }
+      }
+    }
+
     stage("Archive results") {
       step([$class: 'JUnitResultArchiver', testResults: '*/build/test-results/**/*.xml'])
 

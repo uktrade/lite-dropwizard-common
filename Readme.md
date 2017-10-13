@@ -38,3 +38,7 @@ Support for adding readiness metrics accessible via the admin port.
 ### [Spire Client](spire-client)
 
 Support for accessing data from Spire.
+
+### [Jwt](jwt)
+
+Support for jwt authorisation within LITE services.
