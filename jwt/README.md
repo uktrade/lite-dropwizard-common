@@ -1,7 +1,7 @@
 # JWT
 
 Defines helpers objects and methods for consuming a JWT ([Json Web Token](https://jwt.io/)) to a specification common to 
-all lite services. 
+all lite services. Underlying JWT implementation is [jose4j](https://bitbucket.org/b_c/jose4j/wiki/Home).
 
 ## Usage
 
@@ -65,20 +65,20 @@ Consumers of this library expect that any provided JWT will conform to the follo
 This header states that the payload is a JWT and the signature is derived using the HMAC SHA-256 algorithm.
 
 ### JWT payload
-* `sub` (subject) required and maps to the `userId` field of `LiteJwtUser`
-* `email` (custom email claim) not required, but will map to the `email` field of `LiteJwtUser`
-* `aud` (audience) required with value of "lite"
-* `exp` (expiration time) required with an allowed clock skew of 30 seconds
-* `iat` (issued at time) is optional, if provided will be verified with an allowed clock skew of 30 seconds
-* `iss` (issued by) is optional not verified
-
-Any custom claims (such as `email`) are not required verified.
+* `iss` (issued by) is optional not verified. See [iss](https://tools.ietf.org/html/rfc7519#section-4.1.1).
+* `exp` (expiration time) required with an allowed clock skew of 30 seconds. See [exp](https://tools.ietf.org/html/rfc7519#section-4.1.4).
+* `jti` (JWT ID) is optional and not verified. See [jti](https://tools.ietf.org/html/rfc7519#section-4.1.7).
+* `iat` (issued at time) is optional, if provided will be verified with an allowed clock skew of 30 seconds. See [iat](https://tools.ietf.org/html/rfc7519#section-4.1.6).
+* `nbf` (not before time) is optional, if provided will be verified with an allowed clock skew of 30 seconds. See [nbf](https://tools.ietf.org/html/rfc7519#section-4.1.5).
+* `sub` (subject) required and maps to the `userId` field of `LiteJwtUser`. See [sub](https://tools.ietf.org/html/rfc7519#section-4.1.2).
+* `email` (custom email claim) required and maps to the `email` field of `LiteJwtUser`
+* `fullName` (custom fullName claim) required and maps to the `fullName` field of `LiteJwtUser`
 
 ### Example header
 The HTTP Authorization header should be prefixed with "Bearer" and realm "realm" (if provided).
 
 ```text
-curl -X GET \ -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJTb21lIGxpdGUgc2VydmljZSIsImlhdCI6MTUwNzU0MjM3NiwiZXhwIjoxNjAyMjM2Nzc2LCJhdWQiOiJsaXRlIiwic3ViIjoiMTIzNDU2IiwiZW1haWwiOiJleGFtcGxlQGV4YW1wbGUuY29tIn0.wC_Jc4cOoM4UFX7UHHD3hCUcz8b9UPL_ImncY5FtAho"
+curl -X GET \ -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJTb21lIGxpdGUgYXBwbGljYXRpb24iLCJleHAiOjE1MzkzNjIwMzMsImp0aSI6InA0MDJRMzFkRXlTeTNiWUxlc2Q5a2ciLCJpYXQiOjE1MDc4MjYwMzMsIm5iZiI6MTUwNzgyNTkxMywic3ViIjoiMTIzNDU2IiwiZW1haWwiOiJleGFtcGxlQGV4YW1wbGUuY29tIiwiZnVsbE5hbWUiOiJNciBUZXN0In0.qlu5a6hAVvUO-XrftkLCk_1xqhYjWtCaotR7narg7EU"
 ```     
      
 Decodes to:
@@ -88,12 +88,14 @@ Decodes to:
   "alg": "HS256"
 }.
 {
-  "iss": "Some lite service",
-  "iat": 1507542376,
-  "exp": 1602236776,
-  "aud": "lite",
+  "iss": "Some lite application",
+  "exp": 1539362033,
+  "jti": "p402Q31dEySy3bYLesd9kg",
+  "iat": 1507826033,
+  "nbf": 1507825913,
   "sub": "123456",
-  "email": "example@example.com"
+  "email": "example@example.com",
+  "fullName": "Mr Test"
 }
 ```
 With a shared secret of "demo-secret-which-is-very-long-so-as-to-hit-the-byte-requirement" 

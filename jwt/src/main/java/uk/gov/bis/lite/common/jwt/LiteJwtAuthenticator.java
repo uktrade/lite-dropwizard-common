@@ -19,15 +19,29 @@ public class LiteJwtAuthenticator implements Authenticator<JwtContext, LiteJwtUs
     try {
       String userId = context.getJwtClaims().getSubject();
       String email = context.getJwtClaims().getStringClaimValue("email");
+      String fullName = context.getJwtClaims().getStringClaimValue("fullName");
+      LOGGER.info("JWT: sub \"{}\" email \"{}\" fullName \"{}\"", userId, email, fullName);
 
-      if (!StringUtils.isBlank(userId)) {
-        LOGGER.info("JWT: sub \"{}\" email \"{}\"", userId, email);
-        return Optional.of(new LiteJwtUser(userId, email));
+      boolean userIdIsValid = !StringUtils.isBlank(userId);
+      boolean emailIsValid = !StringUtils.isBlank(email);
+      boolean fullNameIsValid = !StringUtils.isBlank(fullName);
+
+      if (userIdIsValid && emailIsValid && fullNameIsValid) {
+        return Optional.of(new LiteJwtUser(userId, email, fullName));
       } else {
-        LOGGER.info("JWT: invalid sub \"{}\"");
+        StringBuilder messageSb = new StringBuilder("JWT: invalid claim(s) - ");
+        if (!userIdIsValid) {
+          messageSb.append("sub \"" + userId + "\" ");
+        }
+        if (!emailIsValid) {
+          messageSb.append("email \"" + email + "\" ");
+        }
+        if (!fullNameIsValid) {
+          messageSb.append("fullName \"" + fullName + "\" ");
+        }
+        LOGGER.warn(messageSb.toString());
+        return Optional.empty();
       }
-
-      return Optional.empty();
     } catch (MalformedClaimException e) {
       return Optional.empty();
     }
