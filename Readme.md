@@ -39,6 +39,6 @@ Support for adding readiness metrics accessible via the admin port.
 
 Support for accessing data from Spire.
 
-### [Jwt](jwt)
+### [JWT](jwt)
 
-Support for jwt authorisation within LITE services.
+Support for JWT authorisation within LITE services.
