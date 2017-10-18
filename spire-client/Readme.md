@@ -96,4 +96,13 @@ public class CompanyParser implements SpireParser<List<SpireCompany>> {
 }   
 ```
 
+Finally, ensure that the following `sun` java system properties have reasonable values (defaults are 0), this prevents SOAP 
+connections waiting indefinitely on socket `connect` or `read`:
+
+```
+sun.rmi.transport.proxy.connectTimeout=20000
+sun.net.client.defaultConnectTimeout=20000
+sun.net.client.defaultReadTimeout=60000
+```
+
 For more examples of how to use the SpireClient see the lite-customer-service project
