@@ -20,14 +20,22 @@ public class MyApplication extends Application<Configuration> {
     
     JwtAuthFilter<LiteJwtUser> liteJwtUserJwtAuthFilter = LiteJwtAuthFilterHelper.buildAuthFilter(jwtSharedSecret);
     
+    // As the sole Principal type on the service
     environment.jersey().register(new AuthDynamicFeature(liteJwtUserJwtAuthFilter));
-    
     environment.jersey().register(new AuthValueFactoryProvider.Binder<>(LiteJwtUser.class));
+    
+    // Or with multiple Principal types 
+    PolymorphicAuthDynamicFeature authFeature = new PolymorphicAuthDynamicFeature(
+        ImmutableMap.of(
+            MyOtherPrinciple.class, myOtherPrincipleFilter,
+            LiteJwtUser.class, liteJwtUserJwtAuthFilter));
+    AbstractBinder authBinder = new PolymorphicAuthValueFactoryProvider.Binder<>(ImmutableSet.of(PrincipalImpl.class, LiteJwtUser.class));
+    environment.jersey().register(authFeature);
+    environment.jersey().register(authBinder);
     ...
     
   } 
 }
-
 ```
 
 Then add `@Auth LiteJwtUser user` to the parameters of any resource methods which require JWT authorisation
