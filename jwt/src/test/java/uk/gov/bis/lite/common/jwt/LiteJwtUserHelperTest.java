@@ -11,7 +11,7 @@ import javax.ws.rs.core.Response;
 public class LiteJwtUserHelperTest extends BaseTest {
 
   @Test
-  public void name() throws Exception {
+  public void generateTokenFromLiteJwtUserTest() throws Exception {
     LiteJwtUser liteJwtUser = new LiteJwtUser("123456", "example@example.com", "Mr Test");
     String jwt = LiteJwtUserHelper.generateTokenFromLiteJwtUser(JWT_SHARED_SECRET, "Some lite application", liteJwtUser);
 
