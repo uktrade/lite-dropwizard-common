@@ -36,8 +36,7 @@ public class LiteJwtAuthFilterTest extends BaseTest {
 
   private static NumericDate dateMinutesFromNow(long minutes) {
     NumericDate numericDate = NumericDate.now();
-    float secondsOffset = minutes * 60;
-    numericDate.addSeconds((long) secondsOffset);
+    numericDate.addSeconds(minutes * 60);
     return numericDate;
   }
 

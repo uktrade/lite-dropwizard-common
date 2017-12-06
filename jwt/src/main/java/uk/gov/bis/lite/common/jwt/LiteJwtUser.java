@@ -9,16 +9,6 @@ public class LiteJwtUser implements Principal {
   private String email;
   private String fullName;
 
-  public LiteJwtUser() {
-
-  }
-
-  public LiteJwtUser(String userId, String email, String fullName) {
-    this.userId = userId;
-    this.email = email;
-    this.fullName = fullName;
-  }
-
   public String getUserId() {
     return userId;
   }

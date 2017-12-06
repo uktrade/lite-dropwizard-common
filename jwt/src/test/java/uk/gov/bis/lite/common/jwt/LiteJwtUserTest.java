@@ -15,7 +15,11 @@ public class LiteJwtUserTest {
 
   @Test
   public void jsonTest() throws Exception {
-    LiteJwtUser liteJwtUser = new LiteJwtUser(USER_ID, EMAIL, FULL_NAME);
+    LiteJwtUser liteJwtUser = new LiteJwtUser()
+        .setUserId(USER_ID)
+        .setEmail(EMAIL)
+        .setFullName(FULL_NAME);
+
     ObjectMapper mapper = new ObjectMapper();
     String liteJwtUserJson = mapper.writeValueAsString(liteJwtUser);
 

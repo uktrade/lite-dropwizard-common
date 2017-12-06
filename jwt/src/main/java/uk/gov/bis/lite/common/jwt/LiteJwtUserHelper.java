@@ -6,13 +6,10 @@ import org.jose4j.jwt.JwtClaims;
 import org.jose4j.jwx.HeaderParameterNames;
 import org.jose4j.keys.HmacKey;
 import org.jose4j.lang.JoseException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class LiteJwtUserHelper {
-  private static final Logger LOGGER = LoggerFactory.getLogger(LiteJwtUserHelper.class);
 
-  LiteJwtUserHelper() {
+  private LiteJwtUserHelper() {
   }
 
   /**
@@ -29,7 +26,7 @@ public class LiteJwtUserHelper {
     claims.setGeneratedJwtId();
     claims.setIssuedAtToNow();
     claims.setNotBeforeMinutesInThePast(2);
-    claims.setSubject(liteJwtUser.getName()); // userId
+    claims.setSubject(liteJwtUser.getUserId());
     claims.setClaim("email", liteJwtUser.getEmail());
     claims.setClaim("fullName", liteJwtUser.getFullName());
 
@@ -42,8 +39,7 @@ public class LiteJwtUserHelper {
     try {
       return jws.getCompactSerialization();
     } catch (JoseException e) {
-      LOGGER.error("JoseException", e);
-      return null;
+      throw new RuntimeException("Exception during serialization to token", e);
     }
   }
 }
