@@ -1,12 +1,7 @@
-import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
+package uk.gov.bis.lite.common.jwt;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
-import app.TestApp;
-import app.TestAppConfig;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.dropwizard.testing.ConfigOverride;
-import io.dropwizard.testing.junit.DropwizardAppRule;
 import org.jose4j.jwa.AlgorithmConstraints;
 import org.jose4j.jws.AlgorithmIdentifiers;
 import org.jose4j.jws.JsonWebSignature;
@@ -15,44 +10,17 @@ import org.jose4j.jwt.NumericDate;
 import org.jose4j.jwx.HeaderParameterNames;
 import org.jose4j.keys.HmacKey;
 import org.jose4j.lang.JoseException;
-import org.junit.ClassRule;
 import org.junit.Test;
 
-import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.ws.rs.core.Response;
 
-public class LiteJwtAuthFilterTest {
-
-  public static final String JWT_SHARED_SECRET = "demo-secret-which-is-very-long-so-as-to-hit-the-byte-requirement";
+public class LiteJwtAuthFilterTest extends BaseTest {
 
   public static final long EXP_MINUTES_INTO_FUTURE = 10;
 
   public static final long NBF_MINUTES_INTO_PAST = 2;
-
-  @ClassRule
-  public static final DropwizardAppRule<TestAppConfig> RULE = new DropwizardAppRule<>(
-      TestApp.class, resourceFilePath("test-config.yaml"),
-      ConfigOverride.config("jwtSharedSecret", JWT_SHARED_SECRET));
-
-  private static String urlTarget(String targetPath) {
-    return "http://localhost:" + RULE.getLocalPort() + targetPath;
-  }
-
-  private static Map<String, String> jsonObjToMap(String jsonObj) throws IOException {
-    TypeReference<HashMap<String, String>> typeRef = new TypeReference<HashMap<String, String>>() {};
-    ObjectMapper mapper = new ObjectMapper();
-    return mapper.readValue(jsonObj, typeRef);
-  }
-
-  private static NumericDate dateMinutesFromNow(long minutes) {
-    NumericDate numericDate = NumericDate.now();
-    float secondsOffset = minutes * 60;
-    numericDate.addSeconds((long)secondsOffset);
-    return numericDate;
-  }
 
   /**
    * Signs given claims with JWT_SHARED_SECRET and HMAC_256
@@ -66,13 +34,10 @@ public class LiteJwtAuthFilterTest {
     return jws.getCompactSerialization();
   }
 
-  /**
-   * Sends GET request to given target with given jwt in "Authorization" header
-   */
-  private static Response getResponse(String target, String jwt) {
-    return RULE.client().target(urlTarget(target)).request()
-        .header("Authorization", "Bearer " + jwt)
-        .get();
+  private static NumericDate dateMinutesFromNow(long minutes) {
+    NumericDate numericDate = NumericDate.now();
+    numericDate.addSeconds(minutes * 60);
+    return numericDate;
   }
 
   @Test
@@ -104,8 +69,8 @@ public class LiteJwtAuthFilterTest {
     claims.setIssuedAtToNow();
     claims.setNotBeforeMinutesInThePast(NBF_MINUTES_INTO_PAST);
     claims.setSubject("123456");
-    claims.setClaim("email","example@example.com");
-    claims.setClaim("fullName","Mr Test");
+    claims.setClaim("email", "example@example.com");
+    claims.setClaim("fullName", "Mr Test");
 
     String jwt = validSignAndSerialize(claims);
     Response response = getResponse("/auth", jwt);
@@ -128,8 +93,8 @@ public class LiteJwtAuthFilterTest {
     claims.setIssuedAtToNow();
     claims.setNotBeforeMinutesInThePast(NBF_MINUTES_INTO_PAST);
     claims.setSubject("123456");
-    claims.setClaim("email","example@example.com");
-    claims.setClaim("fullName","Mr Test");
+    claims.setClaim("email", "example@example.com");
+    claims.setClaim("fullName", "Mr Test");
 
     // Algorithm is "HS512"
     JsonWebSignature jws = new JsonWebSignature();
@@ -156,8 +121,8 @@ public class LiteJwtAuthFilterTest {
     claims.setIssuedAtToNow();
     claims.setNotBeforeMinutesInThePast(NBF_MINUTES_INTO_PAST);
     claims.setSubject("123456");
-    claims.setClaim("email","example@example.com");
-    claims.setClaim("fullName","Mr Test");
+    claims.setClaim("email", "example@example.com");
+    claims.setClaim("fullName", "Mr Test");
 
     // Algorithm is "none", no signature attached
     JsonWebSignature jws = new JsonWebSignature();
@@ -183,8 +148,8 @@ public class LiteJwtAuthFilterTest {
     claims.setGeneratedJwtId();
     claims.setIssuedAtToNow();
     claims.setNotBeforeMinutesInThePast(NBF_MINUTES_INTO_PAST);
-    claims.setClaim("email","example@example.com");
-    claims.setClaim("fullName","Mr Test");
+    claims.setClaim("email", "example@example.com");
+    claims.setClaim("fullName", "Mr Test");
 
     String jwt = validSignAndSerialize(claims);
     Response response = getResponse("/auth", jwt);
@@ -204,8 +169,8 @@ public class LiteJwtAuthFilterTest {
     claims.setIssuedAtToNow();
     claims.setNotBeforeMinutesInThePast(NBF_MINUTES_INTO_PAST);
     claims.setSubject(""); // Testing this claim
-    claims.setClaim("email","example@example.com");
-    claims.setClaim("fullName","Mr Test");
+    claims.setClaim("email", "example@example.com");
+    claims.setClaim("fullName", "Mr Test");
 
     String jwt = validSignAndSerialize(claims);
     Response response = getResponse("/auth", jwt);
@@ -225,8 +190,8 @@ public class LiteJwtAuthFilterTest {
     claims.setIssuedAtToNow();
     claims.setNotBeforeMinutesInThePast(NBF_MINUTES_INTO_PAST);
     claims.setSubject("     "); // Testing this claim
-    claims.setClaim("email","example@example.com");
-    claims.setClaim("fullName","Mr Test");
+    claims.setClaim("email", "example@example.com");
+    claims.setClaim("fullName", "Mr Test");
 
     String jwt = validSignAndSerialize(claims);
     Response response = getResponse("/auth", jwt);
@@ -246,8 +211,8 @@ public class LiteJwtAuthFilterTest {
     claims.setIssuedAtToNow();
     claims.setNotBeforeMinutesInThePast(NBF_MINUTES_INTO_PAST);
     claims.setSubject(null); // Testing this claim
-    claims.setClaim("email","example@example.com");
-    claims.setClaim("fullName","Mr Test");
+    claims.setClaim("email", "example@example.com");
+    claims.setClaim("fullName", "Mr Test");
 
     String jwt = validSignAndSerialize(claims);
     Response response = getResponse("/auth", jwt);
@@ -267,7 +232,7 @@ public class LiteJwtAuthFilterTest {
     claims.setIssuedAtToNow();
     claims.setNotBeforeMinutesInThePast(NBF_MINUTES_INTO_PAST);
     claims.setSubject("123456");
-    claims.setClaim("fullName","Mr Test");
+    claims.setClaim("fullName", "Mr Test");
 
     String jwt = validSignAndSerialize(claims);
     Response response = getResponse("/auth", jwt);
@@ -287,8 +252,8 @@ public class LiteJwtAuthFilterTest {
     claims.setIssuedAtToNow();
     claims.setNotBeforeMinutesInThePast(NBF_MINUTES_INTO_PAST);
     claims.setSubject("123456");
-    claims.setClaim("email",""); // Testing this claim
-    claims.setClaim("fullName","Mr Test");
+    claims.setClaim("email", ""); // Testing this claim
+    claims.setClaim("fullName", "Mr Test");
 
     String jwt = validSignAndSerialize(claims);
     Response response = getResponse("/auth", jwt);
@@ -308,8 +273,8 @@ public class LiteJwtAuthFilterTest {
     claims.setIssuedAtToNow();
     claims.setNotBeforeMinutesInThePast(NBF_MINUTES_INTO_PAST);
     claims.setSubject("123456");
-    claims.setClaim("email","     "); // Testing this claim
-    claims.setClaim("fullName","Mr Test");
+    claims.setClaim("email", "     "); // Testing this claim
+    claims.setClaim("fullName", "Mr Test");
 
     String jwt = validSignAndSerialize(claims);
     Response response = getResponse("/auth", jwt);
@@ -329,8 +294,8 @@ public class LiteJwtAuthFilterTest {
     claims.setIssuedAtToNow();
     claims.setNotBeforeMinutesInThePast(NBF_MINUTES_INTO_PAST);
     claims.setSubject("123456");
-    claims.setClaim("email",null); // Testing this claim
-    claims.setClaim("fullName","Mr Test");
+    claims.setClaim("email", null); // Testing this claim
+    claims.setClaim("fullName", "Mr Test");
 
     String jwt = validSignAndSerialize(claims);
     Response response = getResponse("/auth", jwt);
@@ -350,7 +315,7 @@ public class LiteJwtAuthFilterTest {
     claims.setIssuedAtToNow();
     claims.setNotBeforeMinutesInThePast(NBF_MINUTES_INTO_PAST);
     claims.setSubject("123456");
-    claims.setClaim("email","example@example.com");
+    claims.setClaim("email", "example@example.com");
 
     String jwt = validSignAndSerialize(claims);
     Response response = getResponse("/auth", jwt);
@@ -370,8 +335,8 @@ public class LiteJwtAuthFilterTest {
     claims.setIssuedAtToNow();
     claims.setNotBeforeMinutesInThePast(NBF_MINUTES_INTO_PAST);
     claims.setSubject("123456");
-    claims.setClaim("email","example@example.com");
-    claims.setClaim("fullName",""); // Testing this claim
+    claims.setClaim("email", "example@example.com");
+    claims.setClaim("fullName", ""); // Testing this claim
 
     String jwt = validSignAndSerialize(claims);
     Response response = getResponse("/auth", jwt);
@@ -391,8 +356,8 @@ public class LiteJwtAuthFilterTest {
     claims.setIssuedAtToNow();
     claims.setNotBeforeMinutesInThePast(NBF_MINUTES_INTO_PAST);
     claims.setSubject("123456");
-    claims.setClaim("email","example@example.com");
-    claims.setClaim("fullName","     "); // Testing this claim
+    claims.setClaim("email", "example@example.com");
+    claims.setClaim("fullName", "     "); // Testing this claim
 
     String jwt = validSignAndSerialize(claims);
     Response response = getResponse("/auth", jwt);
@@ -412,8 +377,8 @@ public class LiteJwtAuthFilterTest {
     claims.setIssuedAtToNow();
     claims.setNotBeforeMinutesInThePast(NBF_MINUTES_INTO_PAST);
     claims.setSubject("123456");
-    claims.setClaim("email","example@example.com");
-    claims.setClaim("fullName",null); // Testing this claim
+    claims.setClaim("email", "example@example.com");
+    claims.setClaim("fullName", null); // Testing this claim
 
     String jwt = validSignAndSerialize(claims);
     Response response = getResponse("/auth", jwt);
@@ -433,8 +398,8 @@ public class LiteJwtAuthFilterTest {
     claims.setIssuedAtToNow();
     claims.setNotBeforeMinutesInThePast(NBF_MINUTES_INTO_PAST);
     claims.setSubject("123456");
-    claims.setClaim("email","example@example.com");
-    claims.setClaim("fullName","Mr Test");
+    claims.setClaim("email", "example@example.com");
+    claims.setClaim("fullName", "Mr Test");
 
     String jwt = validSignAndSerialize(claims);
     Response response = getResponse("/auth", jwt);
@@ -453,8 +418,8 @@ public class LiteJwtAuthFilterTest {
     claims.setIssuedAtToNow();
     claims.setNotBeforeMinutesInThePast(NBF_MINUTES_INTO_PAST);
     claims.setSubject("123456");
-    claims.setClaim("email","example@example.com");
-    claims.setClaim("fullName","Mr Test");
+    claims.setClaim("email", "example@example.com");
+    claims.setClaim("fullName", "Mr Test");
 
     String jwt = validSignAndSerialize(claims);
     Response response = getResponse("/auth", jwt);
@@ -473,8 +438,8 @@ public class LiteJwtAuthFilterTest {
     claims.setIssuedAtToNow();
     claims.setNotBeforeMinutesInThePast(NBF_MINUTES_INTO_PAST);
     claims.setSubject("123456");
-    claims.setClaim("email","example@example.com");
-    claims.setClaim("fullName","Mr Test");
+    claims.setClaim("email", "example@example.com");
+    claims.setClaim("fullName", "Mr Test");
 
     String jwt = validSignAndSerialize(claims);
     Response response = getResponse("/auth", jwt);
@@ -493,8 +458,8 @@ public class LiteJwtAuthFilterTest {
     claims.setGeneratedJwtId();
     claims.setNotBeforeMinutesInThePast(NBF_MINUTES_INTO_PAST);
     claims.setSubject("123456");
-    claims.setClaim("email","example@example.com");
-    claims.setClaim("fullName","Mr Test");
+    claims.setClaim("email", "example@example.com");
+    claims.setClaim("fullName", "Mr Test");
 
     String jwt = validSignAndSerialize(claims);
     Response response = getResponse("/auth", jwt);
@@ -514,8 +479,8 @@ public class LiteJwtAuthFilterTest {
     claims.setGeneratedJwtId();
     claims.setNotBeforeMinutesInThePast(NBF_MINUTES_INTO_PAST);
     claims.setSubject("123456");
-    claims.setClaim("email","example@example.com");
-    claims.setClaim("fullName","Mr Test");
+    claims.setClaim("email", "example@example.com");
+    claims.setClaim("fullName", "Mr Test");
 
     String jwt = validSignAndSerialize(claims);
     Response response = getResponse("/auth", jwt);
@@ -532,8 +497,8 @@ public class LiteJwtAuthFilterTest {
     claims.setGeneratedJwtId();
     claims.setIssuedAtToNow();
     claims.setSubject("123456");
-    claims.setClaim("email","example@example.com");
-    claims.setClaim("fullName","Mr Test");
+    claims.setClaim("email", "example@example.com");
+    claims.setClaim("fullName", "Mr Test");
 
     String jwt = validSignAndSerialize(claims);
     Response response = getResponse("/auth", jwt);
@@ -554,8 +519,8 @@ public class LiteJwtAuthFilterTest {
     claims.setIssuedAtToNow();
     claims.setNotBefore(dateMinutesFromNow(2)); // Testing this claim
     claims.setSubject("123456");
-    claims.setClaim("email","example@example.com");
-    claims.setClaim("fullName","Mr Test");
+    claims.setClaim("email", "example@example.com");
+    claims.setClaim("fullName", "Mr Test");
 
     String jwt = validSignAndSerialize(claims);
     Response response = getResponse("/auth", jwt);

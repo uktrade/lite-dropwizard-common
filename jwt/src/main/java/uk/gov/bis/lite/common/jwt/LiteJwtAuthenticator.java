@@ -27,7 +27,11 @@ public class LiteJwtAuthenticator implements Authenticator<JwtContext, LiteJwtUs
       boolean fullNameIsValid = !StringUtils.isBlank(fullName);
 
       if (userIdIsValid && emailIsValid && fullNameIsValid) {
-        return Optional.of(new LiteJwtUser(userId, email, fullName));
+        LiteJwtUser liteJwtUser = new LiteJwtUser()
+            .setUserId(userId)
+            .setEmail(email)
+            .setFullName(fullName);
+        return Optional.of(liteJwtUser);
       } else {
         StringBuilder messageSb = new StringBuilder("JWT: invalid claim(s) - ");
         if (!userIdIsValid) {
