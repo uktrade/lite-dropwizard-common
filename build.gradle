@@ -1,0 +1,47 @@
+subprojects {
+  group 'uk.gov.bis.lite'
+
+  apply plugin: 'java'
+  apply plugin: 'maven-publish'
+
+  sourceCompatibility = 1.8
+
+  repositories {
+    mavenCentral()
+  }
+
+  publishing {
+    publications {
+      mavenJava(MavenPublication) {
+        from components.java
+
+        artifact sourceJar {
+          classifier "sources"
+        }
+
+        artifact javadocJar {
+          classifier "javadoc"
+        }
+      }
+    }
+
+    repositories {
+      maven {
+        name "snapshots"
+        url "http://nexus.mgmt.licensing.service.trade.gov.uk.test/repository/maven-snapshots/"
+      }
+      maven {
+        name "releases"
+        url "http://nexus.mgmt.licensing.service.trade.gov.uk.test/repository/maven-releases/"
+      }
+    }
+  }
+
+  task javadocJar(type: Jar) {
+    from javadoc
+  }
+
+  task sourceJar(type: Jar) {
+    from sourceSets.main.allJava
+  }
+}
