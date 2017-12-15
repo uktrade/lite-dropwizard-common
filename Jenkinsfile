@@ -10,15 +10,15 @@ node('jdk8') {
 
     stage('Checkout files'){
      checkout scm
+     sh 'chmod 777 gradlew'
     }
 
     def testFailure = false
 
     stage("Gradle test: jersey-correlation-id") {
-      dir("jersey-correlation-id") {  
-        sh 'chmod 777 gradlew'
+      dir("jersey-correlation-id") {
         try {
-          sh "./gradlew test"
+          sh "../gradlew test"
         }
         catch (e) {
           testFailure = true
@@ -28,9 +28,8 @@ node('jdk8') {
 
     stage("Gradle test: json-console-appender") {
       dir("json-console-appender") {
-        sh 'chmod 777 gradlew'
         try {
-          sh "./gradlew test"
+          sh "../gradlew test"
         }
         catch (e) {
           testFailure = true
@@ -40,9 +39,8 @@ node('jdk8') {
 
     stage("Gradle test: readiness-metric") {
       dir("readiness-metric") {
-        sh 'chmod 777 gradlew'
         try {
-          sh "./gradlew test"
+          sh "../gradlew test"
         }
         catch (e) {
           testFailure = true
@@ -52,9 +50,8 @@ node('jdk8') {
 
     stage("Gradle test: spire-client") {
       dir("spire-client") {
-        sh 'chmod 777 gradlew'
         try {
-          sh "./gradlew test"
+          sh "../gradlew test"
         }
         catch (e) {
           testFailure = true
@@ -64,9 +61,8 @@ node('jdk8') {
 
     stage("Gradle test: jwt") {
       dir("jwt") {
-        sh 'chmod 777 gradlew'
         try {
-          sh "./gradlew test"
+          sh "../gradlew test"
         }
         catch (e) {
           testFailure = true
