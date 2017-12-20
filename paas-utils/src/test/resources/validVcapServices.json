@@ -1,0 +1,20 @@
+{
+  "postgres": [{
+    "credentials": {
+      "host": "db.host.com",
+      "port": 5432,
+      "name": "db_name",
+      "username": "db_username",
+      "password": "db_password",
+      "uri": "postgres://db_username:db_password@db.host.com:5432/db_name",
+      "jdbcuri": "jdbc:postgresql://db.host.com:5432/db_name?user=db_username&password=db_password"
+    },
+    "syslog_drain_url": null,
+    "volume_mounts": [],
+    "label": "postgres",
+    "provider": null,
+    "plan": "somePlan",
+    "name": "example-database-service",
+    "tags": ["postgres", "relational"]
+  }]
+}

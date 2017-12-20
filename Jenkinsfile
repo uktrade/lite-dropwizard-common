@@ -37,6 +37,17 @@ node('jdk8') {
       }
     }
 
+    stage("Gradle test: paas-utils") {
+      dir("paas-utils") {
+        try {
+          sh "../gradlew test"
+        }
+        catch (e) {
+          testFailure = true
+        }
+      }
+    }
+
     stage("Gradle test: readiness-metric") {
       dir("readiness-metric") {
         try {
