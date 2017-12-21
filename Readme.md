@@ -35,6 +35,10 @@ for logging, to log data in a JSON format instead of just plain text.
 
 Support for JWT authorisation within LITE services.
 
+### [PaaS Utils](paas-utils)
+
+Utilities to help services run within GOV.UK PaaS.
+
 ### [Readiness Metric](readiness-metric)
 
 Support for adding readiness metrics accessible via the admin port.  
