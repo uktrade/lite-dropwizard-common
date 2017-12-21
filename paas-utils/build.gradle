@@ -5,12 +5,13 @@ repositories {
 }
 
 dependencies {
-  compile group: 'io.pivotal.labs', name: 'cf-env', version: '0.0.1'
-  compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.6'
-  compile group: 'io.dropwizard', name: 'dropwizard-configuration', version: '1.2.2'
-  compile group: 'io.dropwizard', name: 'dropwizard-db', version: '1.2.2'
+  compile "io.pivotal.labs:cf-env:0.0.1"
+  compileOnly "org.apache.commons:commons-lang3:3.6"
+  compileOnly "io.dropwizard:dropwizard-configuration:$dropwizardVersion"
+  compileOnly "io.dropwizard:dropwizard-db:$dropwizardVersion"
 
-  testCompile group: 'junit', name: 'junit', version: '4.12'
-  testCompile group: 'io.dropwizard', name: 'dropwizard-testing', version: '1.2.2'
-  testCompile group: 'org.assertj', name: 'assertj-core', version: '3.8.0'
+  testCompile "org.apache.commons:commons-lang3:3.6"
+  testCompile "io.dropwizard:dropwizard-configuration:$dropwizardVersion"
+  testCompile "io.dropwizard:dropwizard-db:$dropwizardVersion"
+  testCompile "io.dropwizard:dropwizard-testing:$dropwizardVersion"
 }
