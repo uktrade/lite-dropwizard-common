@@ -1,11 +1,9 @@
 version '1.6'
 
 dependencies {
-  compileOnly 'io.dropwizard:dropwizard-core:1.0.3'
+  compileOnly "io.dropwizard:dropwizard-core:$dropwizardVersion"
 
-  testCompile group: 'junit', name: 'junit', version: '4.11'
-  testCompile 'org.assertj:assertj-core:3.4.1'
-  testCompile 'com.google.guava:guava-testlib:19.0'
-  testCompile 'com.github.tomakehurst:wiremock:2.7.1'
-  testCompile 'io.dropwizard:dropwizard-testing:1.0.3'
+  testCompile "com.google.guava:guava-testlib:19.0"
+  testCompile "com.github.tomakehurst:wiremock:2.7.1"
+  testCompile "io.dropwizard:dropwizard-testing:$dropwizardVersion"
 }
