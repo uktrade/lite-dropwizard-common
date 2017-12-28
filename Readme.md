@@ -21,6 +21,10 @@ repositories {
 
 ## Libraries
 
+### [Basic Auth](basic-auth)
+
+Support for running a service with basic authentication for a service and an admin user.
+
 ### [Jersey Correlation ID](jersey-correlation-id)
 
 Support for request tracing with Correlation IDs for [Jersey](https://jersey.java.net/) (the RESTful Web Services
@@ -28,7 +32,7 @@ framework that [Dropwizard](http://www.dropwizard.io/) runs on) via a pair of fi
 
 ### [JSON Console Appender](json-console-appender)
 
-Allow logging to the console, via [logback](https://logback.qos.ch/) which [Dropwizard](http://www.dropwizard.io/) uses 
+Allow logging to the console, via [logback](https://logback.qos.ch/) which [Dropwizard](http://www.dropwizard.io/) uses
 for logging, to log data in a JSON format instead of just plain text.
 
 ### [JWT](jwt)
@@ -54,7 +58,7 @@ To add a new library, create it in a new subdirectory and add the name to `setti
 configuration options will be inherited from the main `build.gradle`, but the library's `build.gradle` must specify its
 version and dependencies.
 
-To build or publish a library, the simplest way is to execute Gradle tasks from its directory. E.g. to build just the 
+To build or publish a library, the simplest way is to execute Gradle tasks from its directory. E.g. to build just the
 JWT library:
 
 ```

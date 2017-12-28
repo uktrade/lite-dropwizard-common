@@ -1,5 +1,6 @@
 rootProject.name = 'lite-dropwizard-common'
 
+include 'basic-auth'
 include 'jersey-correlation-id'
 include 'json-console-appender'
 include 'jwt'
