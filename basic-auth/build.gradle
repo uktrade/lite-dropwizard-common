@@ -1,0 +1,10 @@
+version '1.0'
+
+repositories {
+  jcenter()
+}
+
+dependencies {
+  compile "io.dropwizard:dropwizard-auth:$dropwizardVersion"
+  testCompile "io.dropwizard:dropwizard-testing:$dropwizardVersion"
+}
