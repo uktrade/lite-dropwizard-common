@@ -10,11 +10,11 @@ Add the following repositories to your build file to be able to use the librarie
 repositories {
   maven {
     name "snapshots"
-    url "http://nexus.mgmt.int.licensing.service.trade.gov.uk/nexus/content/repositories/snapshots"
+    url "https://nexus.ci.uktrade.io/repository/maven-snapshots/"
   }
   maven {
     name "releases"
-    url "http://nexus.mgmt.int.licensing.service.trade.gov.uk/nexus/content/repositories/releases"
+    url "https://nexus.ci.uktrade.io/repository/maven-releases/"
   }
 }
 ```

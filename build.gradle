@@ -17,6 +17,9 @@ subprojects {
     testCompile group: 'org.assertj', name: 'assertj-core', version: '3.8.0'
   }
 
+  def nexusUsername = project.hasProperty('nexusUsername') ? project.nexusUsername : ''
+  def nexusPassword = project.hasProperty('nexusPassword') ? project.nexusPassword : ''
+
   publishing {
     publications {
       mavenJava(MavenPublication) {
@@ -35,11 +38,19 @@ subprojects {
     repositories {
       maven {
         name "snapshots"
-        url "http://nexus.mgmt.licensing.service.trade.gov.uk.test/repository/maven-snapshots/"
+        url "https://nexus.ci.uktrade.io/repository/maven-snapshots/"
+        credentials {
+          username nexusUsername
+          password nexusPassword
+        }
       }
       maven {
         name "releases"
-        url "http://nexus.mgmt.licensing.service.trade.gov.uk.test/repository/maven-releases/"
+        url "https://nexus.ci.uktrade.io/repository/maven-releases/"
+        credentials {
+          username nexusUsername
+          password nexusPassword
+        }
       }
     }
   }
