@@ -7,14 +7,18 @@ pipeline {
 
   stages {
     stage('prep') {
-      deleteDir()
-      checkout scm
-      deployer = docker.image("ukti/lite-image-builder")
-      deployer.pull()
-      deployer.inside {
-        sh 'chmod 777 gradlew'
+      steps {
+        script {
+          deleteDir()
+          checkout scm
+          deployer = docker.image("ukti/lite-image-builder")
+          deployer.pull()
+          deployer.inside {
+            sh 'chmod 777 gradlew'
+          }
+          testFailure = false
+        }
       }
-      testFailure = false
     }
 
     stage("test: jersey-correlation-id") {
