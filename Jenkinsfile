@@ -24,14 +24,12 @@ pipeline {
     stage("test: jersey-correlation-id") {
       steps {
         script {
-          dir("jersey-correlation-id") {
-            deployer.inside {
-              try {
-                sh "../gradlew test"
-              }
-              catch (e) {
-                testFailure = true
-              }
+          deployer.inside {
+            try {
+              sh "./gradlew jersey-correlation-id:test"
+            }
+            catch (e) {
+              testFailure = true
             }
           }
         }
@@ -41,14 +39,12 @@ pipeline {
     stage("test: json-console-appender") {
       steps {
         script {
-          dir("json-console-appender") {
-            deployer.inside {
-              try {
-                sh "../gradlew test"
-              }
-              catch (e) {
-                testFailure = true
-              }
+          deployer.inside {
+            try {
+              sh "./gradlew json-console-appender:test"
+            }
+            catch (e) {
+              testFailure = true
             }
           }
         }
@@ -58,14 +54,12 @@ pipeline {
     stage("test: paas-utils") {
       steps {
         script {
-          dir("paas-utils") {
-            deployer.inside {
-              try {
-                sh "../gradlew test"
-              }
-              catch (e) {
-                testFailure = true
-              }
+          deployer.inside {
+            try {
+              sh "./gradlew paas-utils:test"
+            }
+            catch (e) {
+              testFailure = true
             }
           }
         }
@@ -75,14 +69,12 @@ pipeline {
     stage("test: readiness-metric") {
       steps {
         script {
-          dir("readiness-metric") {
-            deployer.inside {
-              try {
-                sh "../gradlew test"
-              }
-              catch (e) {
-                testFailure = true
-              }
+          deployer.inside {
+            try {
+              sh "./gradlew readiness-metric:test"
+            }
+            catch (e) {
+              testFailure = true
             }
           }
         }
@@ -92,14 +84,12 @@ pipeline {
     stage("test: spire-client") {
       steps {
         script {
-          dir("spire-client") {
-            deployer.inside {
-              try {
-                sh "../gradlew test"
-              }
-              catch (e) {
-                testFailure = true
-              }
+          deployer.inside {
+            try {
+              sh "./gradlew spire-client:test"
+            }
+            catch (e) {
+              testFailure = true
             }
           }
         }
@@ -109,14 +99,12 @@ pipeline {
     stage("test: jwt") {
       steps {
         script {
-          dir("jwt") {
-            deployer.inside {
-              try {
-                sh "../gradlew test"
-              }
-              catch (e) {
-                testFailure = true
-              }
+          deployer.inside {
+            try {
+              sh "./gradlew jwt:test"
+            }
+            catch (e) {
+              testFailure = true
             }
           }
         }
@@ -127,10 +115,6 @@ pipeline {
       steps {
         script {
           step([$class: 'JUnitResultArchiver', testResults: '*/build/test-results/**/*.xml'])
-
-          if (testFailure) {
-            error("Test failures found, see the test reports for more details")
-          }
         }
       }
     }
