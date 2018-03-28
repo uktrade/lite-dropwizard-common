@@ -24,7 +24,7 @@ public class SpireRequest {
    *
    * @param message SOAPMessage {@link SOAPMessage}
    */
-  public SpireRequest(SOAPMessage message) {
+  SpireRequest(SOAPMessage message) {
     this.message = message;
     this.parent = getParent(message);
   }
