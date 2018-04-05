@@ -119,6 +119,20 @@ pipeline {
       }
     }
 
+    stage('sonarqube') {
+      steps {
+        script {
+          deployer.inside {
+            withSonarQubeEnv('sonarqube') {
+              sh 'chmod 777 gradlew'
+              sh './gradlew compileJava compileTestJava -i'
+              sh "${env.SONAR_SCANNER_PATH}/sonar-scanner"
+            }
+          }
+        }
+      }
+    }
+
     stage("check test failures") {
       steps {
         script {
