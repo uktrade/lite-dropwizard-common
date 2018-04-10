@@ -6,6 +6,7 @@ import org.jose4j.jwt.MalformedClaimException;
 import org.jose4j.jwt.consumer.JwtContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.gov.bis.lite.user.api.view.UserAccountType;
 
 import java.util.Optional;
 
@@ -20,17 +21,21 @@ public class LiteJwtAuthenticator implements Authenticator<JwtContext, LiteJwtUs
       String userId = context.getJwtClaims().getSubject();
       String email = context.getJwtClaims().getStringClaimValue("email");
       String fullName = context.getJwtClaims().getStringClaimValue("fullName");
-      LOGGER.info("JWT: sub \"{}\" email \"{}\" fullName \"{}\"", userId, email, fullName);
+      String userAccountType = context.getJwtClaims().getStringClaimValue("userAccountType");
+      Optional<UserAccountType> userAccountTypeOptional = UserAccountType.getEnumByValue(userAccountType);
+      LOGGER.info("JWT: sub \"{}\" email \"{}\" fullName \"{}\" userAccountType \"{}\"", userId, email, fullName, userAccountType);
 
       boolean userIdIsValid = !StringUtils.isBlank(userId);
       boolean emailIsValid = !StringUtils.isBlank(email);
       boolean fullNameIsValid = !StringUtils.isBlank(fullName);
+      boolean userAccountTypeIsValid = userAccountTypeOptional.isPresent();
 
-      if (userIdIsValid && emailIsValid && fullNameIsValid) {
+      if (userIdIsValid && emailIsValid && fullNameIsValid && userAccountTypeIsValid) {
         LiteJwtUser liteJwtUser = new LiteJwtUser()
             .setUserId(userId)
             .setEmail(email)
-            .setFullName(fullName);
+            .setFullName(fullName)
+            .setUserAccountType(userAccountTypeOptional.get());
         return Optional.of(liteJwtUser);
       } else {
         StringBuilder messageSb = new StringBuilder("JWT: invalid claim(s) - ");
@@ -42,6 +47,9 @@ public class LiteJwtAuthenticator implements Authenticator<JwtContext, LiteJwtUs
         }
         if (!fullNameIsValid) {
           messageSb.append("fullName \"" + fullName + "\" ");
+        }
+        if (!userAccountTypeIsValid) {
+          messageSb.append("userAccountType \"" + userAccountType + "\" ");
         }
         LOGGER.warn(messageSb.toString());
         return Optional.empty();

@@ -3,6 +3,7 @@ package uk.gov.bis.lite.common.jwt;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
+import uk.gov.bis.lite.user.api.view.UserAccountType;
 
 import java.util.Map;
 
@@ -17,7 +18,8 @@ public class LiteJwtUserHelperTest extends BaseTest {
     LiteJwtUser liteJwtUser = new LiteJwtUser()
         .setUserId("123456")
         .setEmail("example@example.com")
-        .setFullName("Mr Test");
+        .setFullName("Mr Test")
+        .setUserAccountType(UserAccountType.REGULATOR);
     String jwt = liteJwtUserHelper.generateToken(liteJwtUser);
 
     Response response = getResponse("/auth", jwt);
@@ -29,5 +31,6 @@ public class LiteJwtUserHelperTest extends BaseTest {
     assertThat(map.get("userId")).isEqualTo("123456");
     assertThat(map.get("email")).isEqualTo("example@example.com");
     assertThat(map.get("fullName")).isEqualTo("Mr Test");
+    assertThat(map.get("userAccountType")).isEqualTo(UserAccountType.REGULATOR.getValue());
   }
 }
