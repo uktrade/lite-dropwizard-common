@@ -3,6 +3,7 @@ subprojects {
 
   apply plugin: 'java'
   apply plugin: 'maven-publish'
+  apply plugin: 'jacoco'
 
   sourceCompatibility = 1.8
 

@@ -21,6 +21,21 @@ pipeline {
       }
     }
 
+    stage("test: basic-auth") {
+      steps {
+        script {
+          deployer.inside {
+            try {
+              sh "./gradlew basic-auth:test"
+            }
+            catch (e) {
+              testFailure = true
+            }
+          }
+        }
+      }
+    }
+
     stage("test: jersey-correlation-id") {
       steps {
         script {
@@ -42,6 +57,21 @@ pipeline {
           deployer.inside {
             try {
               sh "./gradlew json-console-appender:test"
+            }
+            catch (e) {
+              testFailure = true
+            }
+          }
+        }
+      }
+    }
+
+    stage("test: jwt") {
+      steps {
+        script {
+          deployer.inside {
+            try {
+              sh "./gradlew jwt:test"
             }
             catch (e) {
               testFailure = true
@@ -96,25 +126,26 @@ pipeline {
       }
     }
 
-    stage("test: jwt") {
-      steps {
-        script {
-          deployer.inside {
-            try {
-              sh "./gradlew jwt:test"
-            }
-            catch (e) {
-              testFailure = true
-            }
-          }
-        }
-      }
-    }
+
 
     stage("archive results") {
       steps {
         script {
           step([$class: 'JUnitResultArchiver', testResults: '*/build/test-results/**/*.xml'])
+        }
+      }
+    }
+
+    stage('sonarqube') {
+      steps {
+        script {
+          deployer.inside {
+            withSonarQubeEnv('sonarqube') {
+              sh 'chmod 777 gradlew'
+              sh './gradlew compileJava compileTestJava -i'
+              sh "${env.SONAR_SCANNER_PATH}/sonar-scanner"
+            }
+          }
         }
       }
     }
