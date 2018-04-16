@@ -58,10 +58,22 @@ To add a new library, create it in a new subdirectory and add the name to `setti
 configuration options will be inherited from the main `build.gradle`, but the library's `build.gradle` must specify its
 version and dependencies.
 
-To build or publish a library, the simplest way is to execute Gradle tasks from its directory. E.g. to build just the
+To build or test a library, the simplest way is to execute Gradle tasks from its directory. E.g. to build just the
 JWT library:
 
 ```
 cd jwt
 ../gradlew clean build
+```
+
+## Publishing a new library version
+
+To publish a new library version:
+
+* Update the version number in the library's `build.gradle`
+* Run the following publish commands:
+
+```
+cd <lib-directory>
+../gradlew publishMavenJavaPublicationToReleasesRepository -PnexusUsername=<user> -PnexusPassword=<password>
 ```
