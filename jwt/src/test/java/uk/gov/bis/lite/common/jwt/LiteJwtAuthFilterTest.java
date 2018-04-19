@@ -11,7 +11,8 @@ import org.jose4j.jwx.HeaderParameterNames;
 import org.jose4j.keys.HmacKey;
 import org.jose4j.lang.JoseException;
 import org.junit.Test;
-import uk.gov.bis.lite.user.api.view.UserAccountType;
+import uk.gov.bis.lite.user.api.view.AccountType;
+import uk.gov.bis.lite.user.api.view.AccountType;
 
 import java.util.Map;
 
@@ -72,7 +73,7 @@ public class LiteJwtAuthFilterTest extends BaseTest {
     claims.setSubject("123456");
     claims.setClaim("email", "example@example.com");
     claims.setClaim("fullName", "Mr Test");
-    claims.setClaim("userAccountType", UserAccountType.REGULATOR.getValue());
+    claims.setClaim("accountType", AccountType.REGULATOR.getValue());
 
     String jwt = validSignAndSerialize(claims);
     Response response = getResponse("/auth", jwt);
@@ -97,7 +98,7 @@ public class LiteJwtAuthFilterTest extends BaseTest {
     claims.setSubject("123456");
     claims.setClaim("email", "example@example.com");
     claims.setClaim("fullName", "Mr Test");
-    claims.setClaim("userAccountType", UserAccountType.REGULATOR.getValue());
+    claims.setClaim("accountType", AccountType.REGULATOR.getValue());
 
     // Algorithm is "HS512"
     JsonWebSignature jws = new JsonWebSignature();
@@ -126,7 +127,7 @@ public class LiteJwtAuthFilterTest extends BaseTest {
     claims.setSubject("123456");
     claims.setClaim("email", "example@example.com");
     claims.setClaim("fullName", "Mr Test");
-    claims.setClaim("userAccountType", UserAccountType.REGULATOR.getValue());
+    claims.setClaim("accountType", AccountType.REGULATOR.getValue());
 
     // Algorithm is "none", no signature attached
     JsonWebSignature jws = new JsonWebSignature();
@@ -154,7 +155,7 @@ public class LiteJwtAuthFilterTest extends BaseTest {
     claims.setNotBeforeMinutesInThePast(NBF_MINUTES_INTO_PAST);
     claims.setClaim("email", "example@example.com");
     claims.setClaim("fullName", "Mr Test");
-    claims.setClaim("userAccountType", UserAccountType.REGULATOR.getValue());
+    claims.setClaim("accountType", AccountType.REGULATOR.getValue());
 
     String jwt = validSignAndSerialize(claims);
     Response response = getResponse("/auth", jwt);
@@ -176,7 +177,7 @@ public class LiteJwtAuthFilterTest extends BaseTest {
     claims.setSubject(""); // Testing this claim
     claims.setClaim("email", "example@example.com");
     claims.setClaim("fullName", "Mr Test");
-    claims.setClaim("userAccountType", UserAccountType.REGULATOR.getValue());
+    claims.setClaim("accountType", AccountType.REGULATOR.getValue());
 
     String jwt = validSignAndSerialize(claims);
     Response response = getResponse("/auth", jwt);
@@ -198,7 +199,7 @@ public class LiteJwtAuthFilterTest extends BaseTest {
     claims.setSubject("     "); // Testing this claim
     claims.setClaim("email", "example@example.com");
     claims.setClaim("fullName", "Mr Test");
-    claims.setClaim("userAccountType", UserAccountType.REGULATOR.getValue());
+    claims.setClaim("accountType", AccountType.REGULATOR.getValue());
 
     String jwt = validSignAndSerialize(claims);
     Response response = getResponse("/auth", jwt);
@@ -220,7 +221,7 @@ public class LiteJwtAuthFilterTest extends BaseTest {
     claims.setSubject(null); // Testing this claim
     claims.setClaim("email", "example@example.com");
     claims.setClaim("fullName", "Mr Test");
-    claims.setClaim("userAccountType", UserAccountType.REGULATOR.getValue());
+    claims.setClaim("accountType", AccountType.REGULATOR.getValue());
 
     String jwt = validSignAndSerialize(claims);
     Response response = getResponse("/auth", jwt);
@@ -241,7 +242,7 @@ public class LiteJwtAuthFilterTest extends BaseTest {
     claims.setNotBeforeMinutesInThePast(NBF_MINUTES_INTO_PAST);
     claims.setSubject("123456");
     claims.setClaim("fullName", "Mr Test");
-    claims.setClaim("userAccountType", UserAccountType.REGULATOR.getValue());
+    claims.setClaim("accountType", AccountType.REGULATOR.getValue());
 
     String jwt = validSignAndSerialize(claims);
     Response response = getResponse("/auth", jwt);
@@ -263,7 +264,7 @@ public class LiteJwtAuthFilterTest extends BaseTest {
     claims.setSubject("123456");
     claims.setClaim("email", ""); // Testing this claim
     claims.setClaim("fullName", "Mr Test");
-    claims.setClaim("userAccountType", UserAccountType.REGULATOR.getValue());
+    claims.setClaim("accountType", AccountType.REGULATOR.getValue());
 
     String jwt = validSignAndSerialize(claims);
     Response response = getResponse("/auth", jwt);
@@ -285,7 +286,7 @@ public class LiteJwtAuthFilterTest extends BaseTest {
     claims.setSubject("123456");
     claims.setClaim("email", "     "); // Testing this claim
     claims.setClaim("fullName", "Mr Test");
-    claims.setClaim("userAccountType", UserAccountType.REGULATOR.getValue());
+    claims.setClaim("accountType", AccountType.REGULATOR.getValue());
 
     String jwt = validSignAndSerialize(claims);
     Response response = getResponse("/auth", jwt);
@@ -307,7 +308,7 @@ public class LiteJwtAuthFilterTest extends BaseTest {
     claims.setSubject("123456");
     claims.setClaim("email", null); // Testing this claim
     claims.setClaim("fullName", "Mr Test");
-    claims.setClaim("userAccountType", UserAccountType.REGULATOR.getValue());
+    claims.setClaim("accountType", AccountType.REGULATOR.getValue());
 
     String jwt = validSignAndSerialize(claims);
     Response response = getResponse("/auth", jwt);
@@ -328,7 +329,7 @@ public class LiteJwtAuthFilterTest extends BaseTest {
     claims.setNotBeforeMinutesInThePast(NBF_MINUTES_INTO_PAST);
     claims.setSubject("123456");
     claims.setClaim("email", "example@example.com");
-    claims.setClaim("userAccountType", UserAccountType.REGULATOR.getValue());
+    claims.setClaim("accountType", AccountType.REGULATOR.getValue());
 
 
     String jwt = validSignAndSerialize(claims);
@@ -351,7 +352,7 @@ public class LiteJwtAuthFilterTest extends BaseTest {
     claims.setSubject("123456");
     claims.setClaim("email", "example@example.com");
     claims.setClaim("fullName", ""); // Testing this claim
-    claims.setClaim("userAccountType", UserAccountType.REGULATOR.getValue());
+    claims.setClaim("accountType", AccountType.REGULATOR.getValue());
 
     String jwt = validSignAndSerialize(claims);
     Response response = getResponse("/auth", jwt);
@@ -373,7 +374,7 @@ public class LiteJwtAuthFilterTest extends BaseTest {
     claims.setSubject("123456");
     claims.setClaim("email", "example@example.com");
     claims.setClaim("fullName", "     "); // Testing this claim
-    claims.setClaim("userAccountType", UserAccountType.REGULATOR.getValue());
+    claims.setClaim("accountType", AccountType.REGULATOR.getValue());
 
     String jwt = validSignAndSerialize(claims);
     Response response = getResponse("/auth", jwt);
@@ -395,7 +396,7 @@ public class LiteJwtAuthFilterTest extends BaseTest {
     claims.setSubject("123456");
     claims.setClaim("email", "example@example.com");
     claims.setClaim("fullName", null); // Testing this claim
-    claims.setClaim("userAccountType", UserAccountType.REGULATOR.getValue());
+    claims.setClaim("accountType", AccountType.REGULATOR.getValue());
 
     String jwt = validSignAndSerialize(claims);
     Response response = getResponse("/auth", jwt);
@@ -406,8 +407,8 @@ public class LiteJwtAuthFilterTest extends BaseTest {
   }
 
   @Test
-  public void authFailedMissingUserAccountTypeTest() throws Exception {
-    // Claim "userAccountType" is not included
+  public void authFailedMissingAccountTypeTest() throws Exception {
+    // Claim "accountType" is not included
     JwtClaims claims = new JwtClaims();
     claims.setIssuer("Some lite application");
     claims.setExpirationTimeMinutesInTheFuture(EXP_MINUTES_INTO_FUTURE);
@@ -427,8 +428,8 @@ public class LiteJwtAuthFilterTest extends BaseTest {
   }
 
   @Test
-  public void authFailedEmptyUserAccountTypeTest() throws Exception {
-    // Claim "userAccountType" has value ""
+  public void authFailedEmptyAccountTypeTest() throws Exception {
+    // Claim "accountType" has value ""
     JwtClaims claims = new JwtClaims();
     claims.setIssuer("Some lite application");
     claims.setExpirationTimeMinutesInTheFuture(EXP_MINUTES_INTO_FUTURE);
@@ -438,7 +439,7 @@ public class LiteJwtAuthFilterTest extends BaseTest {
     claims.setSubject("123456");
     claims.setClaim("email", "example@example.com");
     claims.setClaim("fullName", "Mr Test");
-    claims.setClaim("userAccountType", ""); // Testing this claim
+    claims.setClaim("accountType", ""); // Testing this claim
 
     String jwt = validSignAndSerialize(claims);
     Response response = getResponse("/auth", jwt);
@@ -449,8 +450,8 @@ public class LiteJwtAuthFilterTest extends BaseTest {
   }
 
   @Test
-  public void authFailedBlankUserAccountTypeTest() throws Exception {
-    // Claim "userAccountType" has value "     "
+  public void authFailedBlankAccountTypeTest() throws Exception {
+    // Claim "accountType" has value "     "
     JwtClaims claims = new JwtClaims();
     claims.setIssuer("Some lite application");
     claims.setExpirationTimeMinutesInTheFuture(EXP_MINUTES_INTO_FUTURE);
@@ -460,7 +461,7 @@ public class LiteJwtAuthFilterTest extends BaseTest {
     claims.setSubject("123456");
     claims.setClaim("email", "example@example.com");
     claims.setClaim("fullName", "Mr Test");
-    claims.setClaim("userAccountType", "     "); // Testing this claim
+    claims.setClaim("accountType", "     "); // Testing this claim
 
     String jwt = validSignAndSerialize(claims);
     Response response = getResponse("/auth", jwt);
@@ -471,8 +472,8 @@ public class LiteJwtAuthFilterTest extends BaseTest {
   }
 
   @Test
-  public void authFailedNullUserAccountTypeTest() throws Exception {
-    // Claim "userAccountType" has value null
+  public void authFailedNullAccountTypeTest() throws Exception {
+    // Claim "accountType" has value null
     JwtClaims claims = new JwtClaims();
     claims.setIssuer("Some lite application");
     claims.setExpirationTimeMinutesInTheFuture(EXP_MINUTES_INTO_FUTURE);
@@ -482,7 +483,7 @@ public class LiteJwtAuthFilterTest extends BaseTest {
     claims.setSubject("123456");
     claims.setClaim("email", "example@example.com");
     claims.setClaim("fullName", "Mr Test");
-    claims.setClaim("userAccountType", null); // Testing this claim
+    claims.setClaim("accountType", null); // Testing this claim
 
     String jwt = validSignAndSerialize(claims);
     Response response = getResponse("/auth", jwt);
@@ -493,7 +494,7 @@ public class LiteJwtAuthFilterTest extends BaseTest {
   }
 
   @Test
-  public void authOkValidUserAccountTypeTest() throws Exception {
+  public void authOkValidAccountTypeTest() throws Exception {
     JwtClaims claims = new JwtClaims();
     claims.setIssuer("Some lite application");
     claims.setExpirationTimeMinutesInTheFuture(EXP_MINUTES_INTO_FUTURE);
@@ -503,7 +504,7 @@ public class LiteJwtAuthFilterTest extends BaseTest {
     claims.setSubject("123456");
     claims.setClaim("email", "example@example.com");
     claims.setClaim("fullName", "Mr Test");
-    claims.setClaim("userAccountType", UserAccountType.REGULATOR); // Testing this claim
+    claims.setClaim("accountType", AccountType.REGULATOR); // Testing this claim
 
     String jwt = validSignAndSerialize(claims);
     Response response = getResponse("/auth", jwt);
@@ -518,7 +519,22 @@ public class LiteJwtAuthFilterTest extends BaseTest {
     claims.setSubject("123456");
     claims.setClaim("email", "example@example.com");
     claims.setClaim("fullName", "Mr Test");
-    claims.setClaim("userAccountType", UserAccountType.EXPORTER); // Testing this claim
+    claims.setClaim("accountType", AccountType.EXPORTER); // Testing this claim
+
+    jwt = validSignAndSerialize(claims);
+    response = getResponse("/auth", jwt);
+    assertThat(response.getStatus()).isEqualTo(200);
+
+    claims = new JwtClaims();
+    claims.setIssuer("Some lite application");
+    claims.setExpirationTimeMinutesInTheFuture(EXP_MINUTES_INTO_FUTURE);
+    claims.setGeneratedJwtId();
+    claims.setIssuedAtToNow();
+    claims.setNotBeforeMinutesInThePast(NBF_MINUTES_INTO_PAST);
+    claims.setSubject("123456");
+    claims.setClaim("email", "example@example.com");
+    claims.setClaim("fullName", "Mr Test");
+    claims.setClaim("accountType", AccountType.UNKNOWN); // Testing this claim
 
     jwt = validSignAndSerialize(claims);
     response = getResponse("/auth", jwt);
@@ -537,7 +553,7 @@ public class LiteJwtAuthFilterTest extends BaseTest {
     claims.setSubject("123456");
     claims.setClaim("email", "example@example.com");
     claims.setClaim("fullName", "Mr Test");
-    claims.setClaim("userAccountType", UserAccountType.REGULATOR.getValue());
+    claims.setClaim("accountType", AccountType.REGULATOR.getValue());
 
     String jwt = validSignAndSerialize(claims);
     Response response = getResponse("/auth", jwt);
@@ -558,7 +574,7 @@ public class LiteJwtAuthFilterTest extends BaseTest {
     claims.setSubject("123456");
     claims.setClaim("email", "example@example.com");
     claims.setClaim("fullName", "Mr Test");
-    claims.setClaim("userAccountType", UserAccountType.REGULATOR.getValue());
+    claims.setClaim("accountType", AccountType.REGULATOR.getValue());
 
     String jwt = validSignAndSerialize(claims);
     Response response = getResponse("/auth", jwt);
@@ -579,7 +595,7 @@ public class LiteJwtAuthFilterTest extends BaseTest {
     claims.setSubject("123456");
     claims.setClaim("email", "example@example.com");
     claims.setClaim("fullName", "Mr Test");
-    claims.setClaim("userAccountType", UserAccountType.REGULATOR.getValue());
+    claims.setClaim("accountType", AccountType.REGULATOR.getValue());
 
     String jwt = validSignAndSerialize(claims);
     Response response = getResponse("/auth", jwt);
@@ -600,7 +616,7 @@ public class LiteJwtAuthFilterTest extends BaseTest {
     claims.setSubject("123456");
     claims.setClaim("email", "example@example.com");
     claims.setClaim("fullName", "Mr Test");
-    claims.setClaim("userAccountType", UserAccountType.REGULATOR.getValue());
+    claims.setClaim("accountType", AccountType.REGULATOR.getValue());
 
     String jwt = validSignAndSerialize(claims);
     Response response = getResponse("/auth", jwt);
@@ -622,7 +638,7 @@ public class LiteJwtAuthFilterTest extends BaseTest {
     claims.setSubject("123456");
     claims.setClaim("email", "example@example.com");
     claims.setClaim("fullName", "Mr Test");
-    claims.setClaim("userAccountType", UserAccountType.REGULATOR.getValue());
+    claims.setClaim("accountType", AccountType.REGULATOR.getValue());
 
     String jwt = validSignAndSerialize(claims);
     Response response = getResponse("/auth", jwt);
@@ -641,7 +657,7 @@ public class LiteJwtAuthFilterTest extends BaseTest {
     claims.setSubject("123456");
     claims.setClaim("email", "example@example.com");
     claims.setClaim("fullName", "Mr Test");
-    claims.setClaim("userAccountType", UserAccountType.REGULATOR.getValue());
+    claims.setClaim("accountType", AccountType.REGULATOR.getValue());
 
     String jwt = validSignAndSerialize(claims);
     Response response = getResponse("/auth", jwt);
@@ -664,7 +680,7 @@ public class LiteJwtAuthFilterTest extends BaseTest {
     claims.setSubject("123456");
     claims.setClaim("email", "example@example.com");
     claims.setClaim("fullName", "Mr Test");
-    claims.setClaim("userAccountType", UserAccountType.REGULATOR.getValue());
+    claims.setClaim("accountType", AccountType.REGULATOR.getValue());
 
     String jwt = validSignAndSerialize(claims);
     Response response = getResponse("/auth", jwt);

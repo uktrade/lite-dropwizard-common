@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
-import uk.gov.bis.lite.user.api.view.UserAccountType;
+import uk.gov.bis.lite.user.api.view.AccountType;
 
 import java.util.Map;
 
@@ -20,7 +20,7 @@ public class LiteJwtUserTest {
         .setUserId(USER_ID)
         .setEmail(EMAIL)
         .setFullName(FULL_NAME)
-        .setUserAccountType(UserAccountType.REGULATOR);
+        .setAccountType(AccountType.REGULATOR);
 
     ObjectMapper mapper = new ObjectMapper();
     String liteJwtUserJson = mapper.writeValueAsString(liteJwtUser);
@@ -31,14 +31,14 @@ public class LiteJwtUserTest {
     assertThat(propMap.get("userId")).isEqualTo(USER_ID);
     assertThat(propMap.get("email")).isEqualTo(EMAIL);
     assertThat(propMap.get("fullName")).isEqualTo(FULL_NAME);
-    assertThat(propMap.get("userAccountType")).isEqualTo(UserAccountType.REGULATOR.getValue());
+    assertThat(propMap.get("accountType")).isEqualTo(AccountType.REGULATOR.getValue());
 
     LiteJwtUser liteJwtUserFromJson = mapper.readValue(liteJwtUserJson, LiteJwtUser.class);
     assertThat(liteJwtUserFromJson.getUserId()).isEqualTo(USER_ID);
     assertThat(liteJwtUserFromJson.getName()).isEqualTo(USER_ID);
     assertThat(liteJwtUserFromJson.getEmail()).isEqualTo(EMAIL);
     assertThat(liteJwtUserFromJson.getFullName()).isEqualTo(FULL_NAME);
-    assertThat(liteJwtUserFromJson.getUserAccountType()).isEqualTo(UserAccountType.REGULATOR);
+    assertThat(liteJwtUserFromJson.getAccountType()).isEqualTo(AccountType.REGULATOR);
   }
 
 }
