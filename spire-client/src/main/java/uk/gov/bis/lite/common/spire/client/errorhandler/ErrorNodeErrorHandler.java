@@ -18,25 +18,25 @@ import javax.xml.xpath.XPathFactory;
 
 /**
  * ErrorNodeErrorHandler
- *
+ * <p>
  * Extend this class and implement handleError(String errorText) method to define custom error handling
- *
+ * <p>
  * As an example:
- *
+ * <p>
  * {@code
- *    <ns:RESPONSE>
- *      <ERROR>Could not create SAR. The error has been logged.</ERROR>
- *    </ns:RESPONSE>
+ * <ns:RESPONSE>
+ * <ERROR>Could not create SAR. The error has been logged.</ERROR>
+ * </ns:RESPONSE>
  * }
- *
+ * <p>
  * This results int a call to handleError(String errorText) with ERROR element content as errorText
  */
 public abstract class ErrorNodeErrorHandler implements ErrorHandler {
 
-  public static final String DEFAULT_ERROR_NODE_NAME = "ERROR";
-  public static final String DEFAULT_RESPONSE_NODE_XPATH = "//*[local-name()='RESPONSE']";
-
   private static final Logger LOGGER = LoggerFactory.getLogger(ErrorNodeErrorHandler.class);
+
+  private static final String DEFAULT_ERROR_NODE_NAME = "ERROR";
+  private static final String DEFAULT_RESPONSE_NODE_XPATH = "//*[local-name()='RESPONSE']";
 
   private final String errorNodeName;
   private final String responseNodeXpath;

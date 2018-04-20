@@ -21,7 +21,7 @@ import uk.gov.bis.lite.common.spire.client.parser.ReferenceParser;
 public class SpireClientTest {
 
   @Rule
-  public WireMockRule wireMockRule = new WireMockRule(options().dynamicPort());
+  public final WireMockRule wireMockRule = new WireMockRule(options().dynamicPort());
 
   @Before
   public void before() throws Exception {
@@ -42,7 +42,7 @@ public class SpireClientTest {
     );
 
     String spireUrl = "http://localhost:" + wireMockRule.port() + "/";
-    SpireClient<String> client =  new SpireClient<>(
+    SpireClient<String> client = new SpireClient<>(
         new ReferenceParser("ELEMENT"),
         new SpireClientConfig("username", "password", spireUrl),
         new SpireRequestConfig("NAMESPACE", "CHILD", false));
@@ -68,7 +68,7 @@ public class SpireClientTest {
     );
 
     String spireUrl = "http://localhost:" + wireMockRule.port() + "/";
-    SpireClient<String> client =  new SpireClient<>(
+    SpireClient<String> client = new SpireClient<>(
         new ReferenceParser("ELEMENT"),
         new SpireClientConfig("username", "password", spireUrl),
         new SpireRequestConfig("NAMESPACE", "CHILD", true));
@@ -88,7 +88,7 @@ public class SpireClientTest {
     );
 
     String spireUrl = "http://localhost:" + wireMockRule.port() + "/";
-    SpireClient<String> client =  new SpireClient<>(
+    SpireClient<String> client = new SpireClient<>(
         new ReferenceParser("ELEMENT"),
         new SpireClientConfig("username", "password", spireUrl),
         new SpireRequestConfig("NAMESPACE", "CHILD", false));
@@ -111,7 +111,7 @@ public class SpireClientTest {
 
     // Note, url missing trailing slash
     String spireUrl = "http://localhost:" + wireMockRule.port() + "/some-path";
-    SpireClient<String> client =  new SpireClient<>(
+    SpireClient<String> client = new SpireClient<>(
         new ReferenceParser("ELEMENT"),
         new SpireClientConfig("username", "password", spireUrl),
         new SpireRequestConfig("NAMESPACE", "CHILD", false));

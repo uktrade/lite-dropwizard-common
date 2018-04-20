@@ -26,6 +26,7 @@ import javax.xml.xpath.XPathFactory;
 public class SpireResponse {
 
   private static final String XPATH_EXP_RESPONSE = "//*[local-name()='RESPONSE']";
+  private static final String ERROR_MESSAGE = "An error occurred while extracting the SOAP Response Body";
 
   private final SOAPMessage message;
 
@@ -64,7 +65,7 @@ public class SpireResponse {
         return new ArrayList<>();
       }
     } catch (SOAPException | XPathExpressionException e) {
-      throw new SpireClientException("An error occurred while extracting the SOAP Response Body", e);
+      throw new SpireClientException(ERROR_MESSAGE, e);
     }
   }
 
@@ -73,11 +74,11 @@ public class SpireResponse {
     List<Node> nodes = new ArrayList<>();
     try {
       NodeList nodeList = (NodeList) xpath.evaluate(xpathExpression, message.getSOAPBody(), XPathConstants.NODESET);
-      list(nodeList).stream().filter(Node::hasChildNodes).forEach(node -> {
-        nodes.addAll(list(node.getChildNodes()));
-      });
+      list(nodeList).stream()
+          .filter(Node::hasChildNodes)
+          .forEach(node -> nodes.addAll(list(node.getChildNodes())));
     } catch (SOAPException | XPathExpressionException e) {
-      throw new SpireClientException("An error occurred while extracting the SOAP Response Body", e);
+      throw new SpireClientException(ERROR_MESSAGE, e);
     }
     return nodes;
   }
@@ -90,7 +91,7 @@ public class SpireResponse {
         return Optional.of(node.getTextContent());
       }
     } catch (XPathExpressionException e) {
-      throw new SpireClientException("Error occurred while parsing the SOAP response body", e);
+      throw new SpireClientException(ERROR_MESSAGE, e);
     }
     return Optional.empty();
   }
@@ -104,7 +105,7 @@ public class SpireResponse {
         nodes = list(child.getChildNodes());
       }
     } catch (XPathExpressionException e) {
-      throw new SpireClientException("An error occurred while extracting the SOAP Response Body", e);
+      throw new SpireClientException(ERROR_MESSAGE, e);
     }
     return nodes;
   }
