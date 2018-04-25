@@ -12,14 +12,14 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * <p>
- *   An HttpServlet to expose the result of a {@link ReadinessService} to be used as a readiness metric.
- *   Will response with {@code 200 (OK)} if the service is ready and {@code 500 (BAD RESPONSE)} otherwise, see {@link ReadinessService#isReady()}.
+ * An HttpServlet to expose the result of a {@link ReadinessService} to be used as a readiness metric.
+ * Will response with {@code 200 (OK)} if the service is ready and {@code 500 (BAD RESPONSE)} otherwise, see {@link ReadinessService#isReady()}.
  * </p>
  * <p>
- *   The response content type is {@code application/json} and body contains JSON defined in {@link ReadinessService#readinessJson()}.
+ * The response content type is {@code application/json} and body contains JSON defined in {@link ReadinessService#readinessJson()}.
  * </p>
  * <p>
- *   This class is expected to be used with the Google Guice library to inject the ReadinessService used by the servlet.
+ * This class is expected to be used with the Google Guice library to inject the ReadinessService used by the servlet.
  * </p>
  */
 public class ReadinessServlet extends HttpServlet {
@@ -43,11 +43,8 @@ public class ReadinessServlet extends HttpServlet {
 
     String readinessJsonString = readinessService.readinessJson().toString();
 
-    final PrintWriter writer = resp.getWriter();
-    try {
+    try (PrintWriter writer = resp.getWriter()) {
       writer.print(readinessJsonString);
-    } finally {
-      writer.close();
     }
   }
 }

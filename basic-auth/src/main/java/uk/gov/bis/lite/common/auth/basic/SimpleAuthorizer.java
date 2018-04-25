@@ -13,7 +13,7 @@ public class SimpleAuthorizer implements Authorizer<User> {
   public boolean authorize(User user, String roleString) {
     Role role = EnumUtils.getEnum(Role.class, roleString);
     if (role == null) {
-      LOGGER.error("Unknown role " + roleString);
+      LOGGER.error("Unknown role {}", roleString);
       return false;
     } else if (user == null) {
       LOGGER.error("User is null");

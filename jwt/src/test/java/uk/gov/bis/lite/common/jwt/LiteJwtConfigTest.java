@@ -1,12 +1,13 @@
 package uk.gov.bis.lite.common.jwt;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.Test;
 
 public class LiteJwtConfigTest {
-  public static final String KEY = "demo-secret-which-is-very-long-so-as-to-hit-the-byte-requirement";
-  public static final String ISSUER = "some-lite-service";
+  private static final String KEY = "demo-secret-which-is-very-long-so-as-to-hit-the-byte-requirement";
+  private static final String ISSUER = "some-lite-service";
 
   @Test
   public void normalUseCaseTest() throws Exception {

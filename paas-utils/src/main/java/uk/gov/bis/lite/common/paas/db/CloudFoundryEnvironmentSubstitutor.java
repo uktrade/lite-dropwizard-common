@@ -11,8 +11,8 @@ import org.apache.commons.lang3.text.StrSubstitutor;
  */
 public class CloudFoundryEnvironmentSubstitutor extends StrSubstitutor {
 
-  public static final String DEFAULT_VCAP_JDBC_ENV_VAR = "VCAP_JDBC_URL";
-  public static final String DEFAULT_SERVICE_TAG = "postgres";
+  private static final String DEFAULT_VCAP_JDBC_ENV_VAR = "VCAP_JDBC_URL";
+  private static final String DEFAULT_SERVICE_TAG = "postgres";
 
   /**
    * Creates a substitutor with default parameters - should be sufficient for most cases.
@@ -26,7 +26,8 @@ public class CloudFoundryEnvironmentSubstitutor extends StrSubstitutor {
   }
 
   @VisibleForTesting
-  CloudFoundryEnvironmentSubstitutor(boolean strict, VcapServicesParser parser, String jdbcVariableName, String serviceTag) {
+  CloudFoundryEnvironmentSubstitutor(boolean strict, VcapServicesParser parser, String jdbcVariableName,
+                                     String serviceTag) {
     super(new JdbcUriLookup(strict, parser, jdbcVariableName, serviceTag));
     this.setEnableSubstitutionInVariables(false);
   }
@@ -46,7 +47,7 @@ public class CloudFoundryEnvironmentSubstitutor extends StrSubstitutor {
 
     @Override
     public String lookup(String key) {
-      if(jdbcVariableName.equals(key)) {
+      if (jdbcVariableName.equals(key)) {
         //Intercept lookup of the VCAP_JDBC_URL variable and defer to the VCAP parser
         return parser.getVcapServiceCredential("jdbcuri", serviceTag);
       } else {

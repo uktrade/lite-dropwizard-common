@@ -34,8 +34,8 @@ public class SpireClient<T> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(SpireClient.class);
 
-  private final String NAMESPACE_URI = "http://www.fivium.co.uk/fox/webservices/ispire/";
-  private final String SPIR_PREFIX = "spir";
+  private static final String NAMESPACE_URI = "http://www.fivium.co.uk/fox/webservices/ispire/";
+  private static final String SPIR_PREFIX = "spir";
 
   private final SpireParser<T> parser;
 
@@ -72,13 +72,13 @@ public class SpireClient<T> {
 
   /**
    * SpireClient
-   *
+   * <p>
    * Creates SpireClient setting failOnSoapFault to true
    *
-   * @param parser          a client specific parser implements SpireParser interface {@link SpireParser}
-   * @param clientConfig    spire connection details
-   * @param requestConfig   configuration relating to specific Client soap endpoint
-   * @param errorHandler    custom error node handling
+   * @param parser        a client specific parser implements SpireParser interface {@link SpireParser}
+   * @param clientConfig  spire connection details
+   * @param requestConfig configuration relating to specific Client soap endpoint
+   * @param errorHandler  custom error node handling
    */
   public SpireClient(SpireParser<T> parser, SpireClientConfig clientConfig, SpireRequestConfig requestConfig,
                      ErrorHandler errorHandler) {
@@ -87,12 +87,12 @@ public class SpireClient<T> {
 
   /**
    * SpireClient
-   *
+   * <p>
    * Creates SpireClient with DefaultErrorNodeErrorHandler and sets failOnSoapFault to true
    *
-   * @param parser          a client specific parser implements SpireParser interface {@link SpireParser}
-   * @param clientConfig    spire connection details
-   * @param requestConfig   configuration relating to specific Client soap endpoint
+   * @param parser        a client specific parser implements SpireParser interface {@link SpireParser}
+   * @param clientConfig  spire connection details
+   * @param requestConfig configuration relating to specific Client soap endpoint
    */
   public SpireClient(SpireParser<T> parser, SpireClientConfig clientConfig, SpireRequestConfig requestConfig) {
     this(parser, clientConfig, requestConfig, new DefaultErrorNodeErrorHandler(), true);
@@ -204,6 +204,7 @@ public class SpireClient<T> {
 
   /**
    * Logs the given SOAP message if the log level is DEBUG
+   *
    * @param message message to log
    */
   private void logSoapMessageDebug(SOAPMessage message) {
@@ -220,11 +221,10 @@ public class SpireClient<T> {
     }
   }
 
-  private String createRequestUrl(String url, String urlSuffix){
+  private String createRequestUrl(String url, String urlSuffix) {
     if (url.endsWith("/")) {
       return url + urlSuffix;
-    }
-    else {
+    } else {
       return url + '/' + urlSuffix;
     }
   }
