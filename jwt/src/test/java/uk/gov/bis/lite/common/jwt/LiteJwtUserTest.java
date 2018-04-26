@@ -9,9 +9,9 @@ import org.junit.Test;
 import java.util.Map;
 
 public class LiteJwtUserTest {
-  public static final String USER_ID = "123456";
-  public static final String EMAIL = "test@example.com";
-  public static final String FULL_NAME = "Mr Test Example";
+  private static final String USER_ID = "123456";
+  private static final String EMAIL = "test@example.com";
+  private static final String FULL_NAME = "Mr Test Example";
 
   @Test
   public void jsonTest() throws Exception {

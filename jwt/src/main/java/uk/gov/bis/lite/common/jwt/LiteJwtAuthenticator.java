@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 
-public class LiteJwtAuthenticator implements Authenticator<JwtContext, LiteJwtUser>{
+public class LiteJwtAuthenticator implements Authenticator<JwtContext, LiteJwtUser> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(LiteJwtAuthenticator.class);
 
@@ -33,17 +33,25 @@ public class LiteJwtAuthenticator implements Authenticator<JwtContext, LiteJwtUs
             .setFullName(fullName);
         return Optional.of(liteJwtUser);
       } else {
-        StringBuilder messageSb = new StringBuilder("JWT: invalid claim(s) - ");
-        if (!userIdIsValid) {
-          messageSb.append("sub \"" + userId + "\" ");
+        if (LOGGER.isWarnEnabled()) {
+          StringBuilder messageSb = new StringBuilder("JWT: invalid claim(s) - ");
+          if (!userIdIsValid) {
+            messageSb.append("sub \"");
+            messageSb.append(userId);
+            messageSb.append("\" ");
+          }
+          if (!emailIsValid) {
+            messageSb.append("email \"");
+            messageSb.append(email);
+            messageSb.append("\" ");
+          }
+          if (!fullNameIsValid) {
+            messageSb.append("fullName \"");
+            messageSb.append(fullName);
+            messageSb.append("\" ");
+          }
+          LOGGER.warn(messageSb.toString());
         }
-        if (!emailIsValid) {
-          messageSb.append("email \"" + email + "\" ");
-        }
-        if (!fullNameIsValid) {
-          messageSb.append("fullName \"" + fullName + "\" ");
-        }
-        LOGGER.warn(messageSb.toString());
         return Optional.empty();
       }
     } catch (MalformedClaimException e) {

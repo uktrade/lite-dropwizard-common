@@ -7,7 +7,7 @@ import org.junit.Test;
 
 public class CloudFoundryEnvironmentSubstitutorTest {
 
-  private VcapServicesParser parser = new VcapServicesParser(name -> {
+  private final VcapServicesParser parser = new VcapServicesParser(name -> {
     if ("VCAP_SERVICES".equals(name)) {
       return fixture("validVcapServices.json");
     } else {

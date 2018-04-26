@@ -1,7 +1,5 @@
 package uk.gov.bis.lite.common.jersey.filter;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import java.io.IOException;
@@ -21,7 +19,6 @@ import javax.ws.rs.core.MultivaluedMap;
 @PreMatching
 @Priority(Integer.MIN_VALUE)
 public class ContainerCorrelationIdFilter implements ContainerRequestFilter, ContainerResponseFilter {
-  private static final Logger LOGGER = LoggerFactory.getLogger(ContainerCorrelationIdFilter.class);
 
   @Override
   public void filter(ContainerRequestContext requestContext) {
@@ -31,17 +28,17 @@ public class ContainerCorrelationIdFilter implements ContainerRequestFilter, Con
       String inboundCorrelationId = inboundCorrelationIdHeader.get(0);
       if (inboundCorrelationId != null && !inboundCorrelationId.isEmpty()) {
         MDC.put(CorrelationIdCommon.MDC_KEY, inboundCorrelationId);
-      }
-      else {
+      } else {
         CorrelationIdCommon.createCorrelationId();
       }
-    }
-    else {
+    } else {
       CorrelationIdCommon.createCorrelationId();
     }
   }
 
-  @Override public void filter(final ContainerRequestContext requestContext, final ContainerResponseContext responseContext) throws IOException {
+  @Override
+  public void filter(final ContainerRequestContext requestContext,
+                     final ContainerResponseContext responseContext) throws IOException {
       /*
        * Intentionally don't remove the correlation id since async responses can potentially run on the same thread
        * So if you complete an async response from the current thread, you will lose the correlation id that was set

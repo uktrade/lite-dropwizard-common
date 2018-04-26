@@ -36,7 +36,8 @@ public class ClientCorrelationIdFilter implements ClientRequestFilter, ClientRes
     if (inboundCorrelationIdHeader != null && !inboundCorrelationIdHeader.isEmpty()) {
       String inboundCorrelationId = inboundCorrelationIdHeader.get(0);
       if (!outboundCorrelationId.equals(inboundCorrelationId)) {
-        LOGGER.warn("Correlation ID not on client response does not match the one sent on the request. Got '" + inboundCorrelationId + "' expected '" + outboundCorrelationId + "'");
+        LOGGER.warn("Correlation ID not on client response does not match the one sent on the request. Got '{}' expected '{}'",
+            inboundCorrelationId, outboundCorrelationId);
       }
     }
   }

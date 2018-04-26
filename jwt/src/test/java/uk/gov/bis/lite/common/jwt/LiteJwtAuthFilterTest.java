@@ -18,9 +18,8 @@ import javax.ws.rs.core.Response;
 
 public class LiteJwtAuthFilterTest extends BaseTest {
 
-  public static final long EXP_MINUTES_INTO_FUTURE = 10;
-
-  public static final long NBF_MINUTES_INTO_PAST = 2;
+  private static final long EXP_MINUTES_INTO_FUTURE = 10;
+  private static final long NBF_MINUTES_INTO_PAST = 2;
 
   /**
    * Signs given claims with JWT_SHARED_SECRET and HMAC_256
