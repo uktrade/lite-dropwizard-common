@@ -1,4 +1,4 @@
-package uk.gov.bis.lite.common.auth.basic;
+package uk.gov.bis.lite.common.auth.admin;
 
 import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
 import static org.assertj.core.api.Assertions.assertThat;

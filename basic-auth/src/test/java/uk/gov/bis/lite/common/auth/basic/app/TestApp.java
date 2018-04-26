@@ -7,7 +7,7 @@ import io.dropwizard.auth.AuthValueFactoryProvider;
 import io.dropwizard.auth.basic.BasicCredentialAuthFilter;
 import io.dropwizard.setup.Environment;
 import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
-import uk.gov.bis.lite.common.auth.basic.AdminConstraintSecurityHandler;
+import uk.gov.bis.lite.common.auth.admin.AdminConstraintSecurityHandler;
 import uk.gov.bis.lite.common.auth.basic.SimpleAuthenticator;
 import uk.gov.bis.lite.common.auth.basic.SimpleAuthorizer;
 import uk.gov.bis.lite.common.auth.basic.User;
