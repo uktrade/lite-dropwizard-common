@@ -12,3 +12,11 @@ adminPassword: pass
 
 serviceLogin: service
 servicePassword: password
+
+server:
+  type: simple
+  applicationContextPath: /
+  adminContextPath: /admin
+  connector:
+      type: http
+      port: 8090

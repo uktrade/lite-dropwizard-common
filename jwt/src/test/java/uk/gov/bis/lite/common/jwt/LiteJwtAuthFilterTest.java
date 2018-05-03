@@ -20,7 +20,6 @@ import javax.ws.rs.core.Response;
 public class LiteJwtAuthFilterTest extends BaseTest {
 
   private static final long EXP_MINUTES_INTO_FUTURE = 10;
-
   private static final long NBF_MINUTES_INTO_PAST = 2;
 
   /**

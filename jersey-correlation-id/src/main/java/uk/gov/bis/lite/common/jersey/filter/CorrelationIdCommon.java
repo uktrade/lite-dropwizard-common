@@ -40,7 +40,7 @@ public class CorrelationIdCommon {
   protected static String createCorrelationId() {
     String newCorrelationId = UUID.randomUUID().toString();
     MDC.put(MDC_KEY, newCorrelationId);
-    LOGGER.debug("Correlation ID not found in headers, created new correlation id: " + newCorrelationId);
+    LOGGER.debug("Correlation ID not found in headers, created new correlation id: {}", newCorrelationId);
     return newCorrelationId;
   }
 }
