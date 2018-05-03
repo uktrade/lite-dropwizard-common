@@ -9,6 +9,14 @@ subprojects {
 
   repositories {
     mavenCentral()
+    maven {
+      name "snapshots"
+      url "https://nexus.ci.uktrade.io/repository/maven-snapshots/"
+    }
+    maven {
+      name "releases"
+      url "https://nexus.ci.uktrade.io/repository/maven-releases/"
+    }
   }
 
   ext.dropwizardVersion = '1.2.2'

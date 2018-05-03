@@ -31,6 +31,7 @@ public class LiteJwtUserHelper {
     claims.setSubject(liteJwtUser.getUserId());
     claims.setClaim("email", liteJwtUser.getEmail());
     claims.setClaim("fullName", liteJwtUser.getFullName());
+    claims.setClaim("accountType", liteJwtUser.getAccountType());
 
     JsonWebSignature jws = new JsonWebSignature();
     jws.setHeader(HeaderParameterNames.TYPE, "JWT");

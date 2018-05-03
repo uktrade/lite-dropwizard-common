@@ -1,6 +1,7 @@
 package uk.gov.bis.lite.common.jwt;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import uk.gov.bis.lite.user.api.view.enums.AccountType;
 
 import java.security.Principal;
 
@@ -8,6 +9,7 @@ public class LiteJwtUser implements Principal {
   private String userId;
   private String email;
   private String fullName;
+  private AccountType accountType;
 
   public String getUserId() {
     return userId;
@@ -36,9 +38,18 @@ public class LiteJwtUser implements Principal {
     return this;
   }
 
+  public AccountType getAccountType() {
+    return accountType;
+  }
+
+  public LiteJwtUser setAccountType(AccountType accountType) {
+    this.accountType = accountType;
+    return this;
+  }
+
   @Override
   @JsonIgnore
   public String getName() {
-    return userId;
+    return getUserId();
   }
 }
