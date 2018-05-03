@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
-import uk.gov.bis.lite.user.api.view.AccountType;
+import uk.gov.bis.lite.user.api.view.enums.AccountType;
 
 import java.util.Map;
 
@@ -31,7 +31,7 @@ public class LiteJwtUserTest {
     assertThat(propMap.get("userId")).isEqualTo(USER_ID);
     assertThat(propMap.get("email")).isEqualTo(EMAIL);
     assertThat(propMap.get("fullName")).isEqualTo(FULL_NAME);
-    assertThat(propMap.get("accountType")).isEqualTo(AccountType.REGULATOR.getValue());
+    assertThat(propMap.get("accountType")).isEqualTo(AccountType.REGULATOR.toString());
 
     LiteJwtUser liteJwtUserFromJson = mapper.readValue(liteJwtUserJson, LiteJwtUser.class);
     assertThat(liteJwtUserFromJson.getUserId()).isEqualTo(USER_ID);

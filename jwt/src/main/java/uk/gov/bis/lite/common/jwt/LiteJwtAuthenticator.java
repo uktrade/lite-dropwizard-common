@@ -6,7 +6,8 @@ import org.jose4j.jwt.MalformedClaimException;
 import org.jose4j.jwt.consumer.JwtContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.gov.bis.lite.user.api.view.AccountType;
+import uk.gov.bis.lite.common.jwt.util.EnumUtil;
+import uk.gov.bis.lite.user.api.view.enums.AccountType;
 
 import java.util.Optional;
 
@@ -21,21 +22,21 @@ public class LiteJwtAuthenticator implements Authenticator<JwtContext, LiteJwtUs
       String userId = context.getJwtClaims().getSubject();
       String email = context.getJwtClaims().getStringClaimValue("email");
       String fullName = context.getJwtClaims().getStringClaimValue("fullName");
-      String accountType = context.getJwtClaims().getStringClaimValue("accountType");
-      Optional<AccountType> accountTypeOptional = AccountType.getEnumByValue(accountType);
-      LOGGER.info("JWT: sub \"{}\" email \"{}\" fullName \"{}\" accountType \"{}\"", userId, email, fullName, accountType);
+      String accountTypeString = context.getJwtClaims().getStringClaimValue("accountType");
+      AccountType accountType = EnumUtil.parse(accountTypeString, AccountType.class);
+      LOGGER.info("JWT: sub \"{}\" email \"{}\" fullName \"{}\" accountType \"{}\"", userId, email, fullName, accountTypeString);
 
       boolean userIdIsValid = !StringUtils.isBlank(userId);
       boolean emailIsValid = !StringUtils.isBlank(email);
       boolean fullNameIsValid = !StringUtils.isBlank(fullName);
-      boolean accountTypeIsValid = accountTypeOptional.isPresent();
+      boolean accountTypeIsValid = accountType != null;
 
       if (userIdIsValid && emailIsValid && fullNameIsValid && accountTypeIsValid) {
         LiteJwtUser liteJwtUser = new LiteJwtUser()
             .setUserId(userId)
             .setEmail(email)
             .setFullName(fullName)
-            .setAccountType(accountTypeOptional.get());
+            .setAccountType(accountType);
         return Optional.of(liteJwtUser);
       } else {
         StringBuilder messageSb = new StringBuilder("JWT: invalid claim(s) - ");
@@ -49,7 +50,7 @@ public class LiteJwtAuthenticator implements Authenticator<JwtContext, LiteJwtUs
           messageSb.append("fullName \"" + fullName + "\" ");
         }
         if (!accountTypeIsValid) {
-          messageSb.append("accountType \"" + accountType + "\" ");
+          messageSb.append("accountType \"" + accountTypeString + "\" ");
         }
         LOGGER.warn(messageSb.toString());
         return Optional.empty();

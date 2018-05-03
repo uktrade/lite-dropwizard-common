@@ -1,7 +1,7 @@
 package uk.gov.bis.lite.common.jwt;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import uk.gov.bis.lite.user.api.view.AccountType;
+import uk.gov.bis.lite.user.api.view.enums.AccountType;
 
 import java.security.Principal;
 

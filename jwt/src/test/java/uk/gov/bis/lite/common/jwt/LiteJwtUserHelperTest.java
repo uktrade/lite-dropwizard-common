@@ -3,7 +3,7 @@ package uk.gov.bis.lite.common.jwt;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
-import uk.gov.bis.lite.user.api.view.AccountType;
+import uk.gov.bis.lite.user.api.view.enums.AccountType;
 
 import java.util.Map;
 
@@ -31,6 +31,6 @@ public class LiteJwtUserHelperTest extends BaseTest {
     assertThat(map.get("userId")).isEqualTo("123456");
     assertThat(map.get("email")).isEqualTo("example@example.com");
     assertThat(map.get("fullName")).isEqualTo("Mr Test");
-    assertThat(map.get("accountType")).isEqualTo(AccountType.REGULATOR.getValue());
+    assertThat(map.get("accountType")).isEqualTo(AccountType.REGULATOR.toString());
   }
 }

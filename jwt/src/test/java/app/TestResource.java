@@ -30,7 +30,7 @@ public class TestResource {
     objectNode.put("userId", liteJwtUser.getUserId());
     objectNode.put("email", liteJwtUser.getEmail());
     objectNode.put("fullName", liteJwtUser.getFullName());
-    objectNode.put("accountType", liteJwtUser.getAccountType().getValue());
+    objectNode.put("accountType", liteJwtUser.getAccountType().toString());
     return objectNode.toString();
   }
 }
