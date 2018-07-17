@@ -45,7 +45,11 @@ Utilities to help services run within GOV.UK PaaS.
 
 ### [Readiness Metric](readiness-metric)
 
-Support for adding readiness metrics accessible via the admin port.  
+Support for adding readiness metrics accessible via the admin port.
+
+### [Redis](redis)
+
+Support for running a service with redis caching.
 
 ### [Spire Client](spire-client)
 
