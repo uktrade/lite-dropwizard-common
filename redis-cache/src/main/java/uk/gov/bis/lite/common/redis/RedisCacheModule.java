@@ -14,26 +14,34 @@ import org.redisson.config.SingleServerConfig;
 
 import java.util.concurrent.TimeUnit;
 
-public class RedisModule extends AbstractModule {
+public class RedisCacheModule extends AbstractModule {
+
+  private static final String NO_CACHE = "no-cache";
 
   private final RedisConfiguration redisConfiguration;
 
-  public RedisModule(RedisConfiguration redisConfiguration) {
+  public RedisCacheModule(RedisConfiguration redisConfiguration) {
     this.redisConfiguration = redisConfiguration;
   }
 
   @Override
   protected void configure() {
     redisConfiguration.getTtl().forEach((key, value) -> {
-      String[] values = value.split(" ");
-      if (values.length != 2) {
-        throw new RuntimeException("Invalid redis configuration.");
+      if (NO_CACHE.equals(value)) {
+        String name = key + "Ttl";
+        bind(Ttl.class).annotatedWith(Names.named(name)).toInstance(Ttl.noCache());
       } else {
-        long timeToLive = Long.parseLong(values[0]);
-        String timeUnitStr = StringUtils.appendIfMissing(values[1], "s");
-        TimeUnit timeUnit = TimeUnit.valueOf(timeUnitStr.toUpperCase());
-        Ttl ttl = new Ttl(timeToLive, timeUnit);
-        bind(Ttl.class).annotatedWith(Names.named(key)).toInstance(ttl);
+        String[] values = value.split(" ");
+        if (values.length != 2) {
+          throw new RuntimeException("Invalid redis configuration.");
+        } else {
+          long timeToLive = Long.parseLong(values[0]);
+          String timeUnitStr = StringUtils.appendIfMissing(values[1], "s");
+          TimeUnit timeUnit = TimeUnit.valueOf(timeUnitStr.toUpperCase());
+          Ttl ttl = Ttl.cache(timeToLive, timeUnit);
+          String name = key + "Ttl";
+          bind(Ttl.class).annotatedWith(Names.named(name)).toInstance(ttl);
+        }
       }
     });
   }

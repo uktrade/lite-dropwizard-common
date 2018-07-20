@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 public class RedissonCache {
 
@@ -39,60 +40,64 @@ public class RedissonCache {
 
   public <T> T get(Supplier<T> supplier, Function<T, Boolean> cache, String method, Ttl ttl, String... arguments) {
     String hashKey = hashKey(method, arguments);
-    for (String argument : arguments) {
-      if (StringUtils.isBlank(argument)) {
-        LOGGER.warn("Unable to use cache for hashKey {} containing blank argument.", hashKey);
-        return supplier.get();
-      }
-    }
-
-    RBucket<T> rBucket = redissonClient.getBucket(hashKey);
-    T cachedObject = rBucket.get();
-    if (cachedObject != null) {
-      LOGGER.info("returned cached object {}", hashKey);
-      return cachedObject;
+    if (hasBlankArgument(arguments)) {
+      LOGGER.warn("Unable to use cache for hashKey {} containing blank argument.", hashKey);
+      return supplier.get();
+    } else if (!ttl.isCache()) {
+      return supplier.get();
     } else {
-      try {
-        T object = supplier.get();
-        if (object != null && cache.apply(object)) {
-          rBucket.set(object, ttl.getTimeToLive(), ttl.getTimeUnit());
+      RBucket<T> rBucket = redissonClient.getBucket(hashKey);
+      T cachedObject = rBucket.get();
+      if (cachedObject != null) {
+        LOGGER.info("returned cached object {}", hashKey);
+        return cachedObject;
+      } else {
+        try {
+          T object = supplier.get();
+          if (object != null && cache.apply(object)) {
+            rBucket.set(object, ttl.getTimeToLive(), ttl.getTimeUnit());
+          }
+          return object;
+        } catch (Exception exception) {
+          LOGGER.error("Unable to get object {}", hashKey, exception);
+          return null;
         }
-        return object;
-      } catch (Exception exception) {
-        LOGGER.error("Unable to get object {}", hashKey, exception);
-        return null;
       }
     }
   }
 
   public <T> Optional<T> getOptional(Supplier<Optional<T>> supplier, String method, Ttl ttl, String... arguments) {
     String hashKey = hashKey(method, arguments);
-    for (String argument : arguments) {
-      if (StringUtils.isBlank(argument)) {
-        LOGGER.warn("Unable to use cache for hashKey {} containing blank argument.", hashKey);
-        return supplier.get();
-      }
-    }
-
-    RBucket<T> rBucket = redissonClient.getBucket(hashKey);
-    T cachedObject = rBucket.get();
-    if (cachedObject != null) {
-      LOGGER.info("returned cached object {}", hashKey);
-      return Optional.of(cachedObject);
+    if (hasBlankArgument(arguments)) {
+      LOGGER.warn("Unable to use cache for hashKey {} containing blank argument.", hashKey);
+      return supplier.get();
+    } else if (!ttl.isCache()) {
+      return supplier.get();
     } else {
-      try {
-        Optional<T> object = supplier.get();
-        if (object.isPresent()) {
-          rBucket.set(object.get(), ttl.getTimeToLive(), ttl.getTimeUnit());
-          return object;
-        } else {
+      RBucket<T> rBucket = redissonClient.getBucket(hashKey);
+      T cachedObject = rBucket.get();
+      if (cachedObject != null) {
+        LOGGER.info("returned cached object {}", hashKey);
+        return Optional.of(cachedObject);
+      } else {
+        try {
+          Optional<T> object = supplier.get();
+          if (object.isPresent()) {
+            rBucket.set(object.get(), ttl.getTimeToLive(), ttl.getTimeUnit());
+            return object;
+          } else {
+            return Optional.empty();
+          }
+        } catch (Exception exception) {
+          LOGGER.error("Unable to get object {}", hashKey, exception);
           return Optional.empty();
         }
-      } catch (Exception exception) {
-        LOGGER.error("Unable to get object {}", hashKey, exception);
-        return Optional.empty();
       }
     }
+  }
+
+  private boolean hasBlankArgument(String... arguments) {
+    return Stream.of(arguments).anyMatch(StringUtils::isBlank);
   }
 
   private String hashKey(String method, String... arguments) {

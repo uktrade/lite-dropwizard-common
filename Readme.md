@@ -47,7 +47,7 @@ Utilities to help services run within GOV.UK PaaS.
 
 Support for adding readiness metrics accessible via the admin port.
 
-### [Redis](redis)
+### [Redis Cache](redis-cache)
 
 Support for running a service with redis caching.
 

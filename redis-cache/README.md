@@ -1,13 +1,13 @@
-# Redis
+# Redis Cache
 
-Helpers for running a service with redis caching.
+Helpers for running a service with Redis caching.
 
 ## Getting started
 
 Add the dependency to your `build.gradle`:
 
 ```groovy
-compile 'uk.gov.bis.lite:redis:0.1.3'
+compile 'uk.gov.bis.lite:redis-cache:0.1.4'
 ```
 
 ## Usage
@@ -29,8 +29,9 @@ public class MyConfiguration extends Configuration {
 }
 ```
 
-Add the redis configuration to your `config.yaml`, including the method time to live values `ttl`. The time to live values are of format
-`methodName: timeToLive timeUnit`, where `timeToLive` is a long and `timeUnit` is any of the enum values in `java.util.concurrent.TimeUnit` in singular or plural.
+Add the redis configuration to your `config.yaml`, including the method time to live values `ttl`.
+The time to live values are of format `methodName: timeToLive timeUnit`, where `timeToLive` is a long and `timeUnit` is any of the enum values in `java.util.concurrent.TimeUnit` in singular or plural.
+If a method shouldn't be cached, the constant `no-cache` can be specified.
 
 ```yaml
 redis:
@@ -47,9 +48,12 @@ redis:
   ttl:
     getSample: "1 minute"
     getSamples: "10 days"
+    getUsers: "no-cache"
 ```
 
-Register the `RedisModule`, for example via a separate RedisServiceModule. The `RedisModule` parses the `ttl` values from the configuration and registers those with Guice as annotated `Ttl` objects. The `RedisModule` also creates a singleton `RedissonCache` which contains the actual caching functionality.
+Register the `RedisCacheModule`, for example via a separate RedisServiceModule. The `RedisCacheModule` parses the `ttl` values from the configuration and registers those with Guice as annotated `Ttl` objects.
+For example, the `Ttl` object for the method `getSample` would be retrieved via `@Named("getSampleTtl")`.
+The `RedisCacheModule` also creates a singleton `RedissonCache` which contains the actual caching functionality.
 
 ```java
 public class RedisServiceModule extends AbstractModule implements ConfigurationAwareModule<ApplicationConfiguration> {
@@ -58,7 +62,7 @@ public class RedisServiceModule extends AbstractModule implements ConfigurationA
 
   @Override
   protected void configure() {
-    install(new RedisModule(applicationConfiguration.getRedisConfiguration()));
+    install(new RedisCacheModule(applicationConfiguration.getRedisConfiguration()));
 
     bind(Service.class).to(RedisServiceImpl.class);
   }
@@ -72,40 +76,42 @@ public class RedisServiceModule extends AbstractModule implements ConfigurationA
 ```
 
 Given an interface Service and a non-redis implementation ServiceImpl, one option is to use the `RedissonCache` and `Ttl` objects via an intermediate class RedisServiceImpl.
+The `RedissonCache` methods `get` and `getOptional` take `String... arguments` as their last arguments.
+These are used to construct the key for the cached object, and should therefore match the arguments of the respective interface method.
 
 ```java
 public class RedisServiceImpl implements Service {
 
   private final ServiceImpl serviceImpl;
   private final RedissonCache redissonCache;
-  private final Ttl getSample;
-  private final Ttl getSamples;
+  private final Ttl getSampleTtl;
+  private final Ttl getSamplesTtl;
 
   @Inject
   public RedisServiceImpl(ServiceImpl serviceImpl,
                           RedissonCache redissonCache,
-                          @Named("getSample") Ttl getSample,
-                          @Named("getSamples") Ttl getSamples) {
+                          @Named("getSampleTtl") Ttl getSampleTtl,
+                          @Named("getSamplesTtl") Ttl getSamplesTtl) {
     this.serviceImpl = serviceImpl;
     this.redissonCache = redissonCache;
-    this.getSample = getSample;
-    this.getSamples = getSamples;
+    this.getSampleTtl = getSampleTtl;
+    this.getSamplesTtl = getSamplesTtl;
   }
 
   @Override
   public Optional<SampleView> getSample(String sampleId) {
     return redissonCache.getOptional(() -> serviceImpl.getSample(sampleId),
         "getSample",
-        getSample,
+        getSampleTtl,
         sampleId);
   }
 
   @Override
-  public List<SampleView> getSamples(String userId) {
-    return redissonCache.get(() -> serviceImpl.getSamples(userId),
+  public List<SampleView> getSamples(String userId, String sampleType) {
+    return redissonCache.get(() -> serviceImpl.getSamples(userId, sampleType),
         "getSamples",
-        getSamples,
-        userId);
+        getSamplesTtl,
+        userId, sampleType);
   }
 
 }
