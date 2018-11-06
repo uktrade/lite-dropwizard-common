@@ -6,6 +6,6 @@ repositories {
 
 dependencies {
   compile "io.dropwizard:dropwizard-configuration:$dropwizardVersion"
-  compile "org.redisson:redisson:3.6.5"
+  compile "org.redisson:redisson:3.9.0"
   compile "com.google.inject:guice:4.2.0"
 }
