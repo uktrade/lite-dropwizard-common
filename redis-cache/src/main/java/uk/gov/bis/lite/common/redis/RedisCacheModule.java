@@ -67,7 +67,6 @@ public class RedisCacheModule extends AbstractModule {
         .setPassword(StringUtils.defaultIfBlank(redisConfiguration.getPassword(), null))
         .setDatabase(redisConfiguration.getDatabase())
         .setTimeout(redisConfiguration.getTimeout())
-        .setDnsMonitoring(false)
         .setDnsMonitoringInterval(-1)
         .setConnectionMinimumIdleSize(redisConfiguration.getPoolMinIdle())
         .setConnectionPoolSize(redisConfiguration.getPoolMaxTotal());
